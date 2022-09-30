@@ -95,7 +95,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
                     'username'     => $config['username'],
                     'password' => $config['password'],
                     'ctx_mode'    => $config['ctx_mode'],
-                    'marketplace_uuid'    => $config['marketplace_uuid'],
+                    'marketplace'    => $config['marketplace_uuid'],
                 ];
 
                 $api = new Api();
