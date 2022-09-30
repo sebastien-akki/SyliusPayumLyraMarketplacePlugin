@@ -8,7 +8,7 @@ services:
     akki.lyra_marketplace.gateway_factory:
         class: Akki\SyliusPayumLyraMarketplacePlugin\Builder\LyraMarketplaceGatewayFactoryBuilder
         arguments:
-            - 'Akki\SyliusPayumLyraMarketplacePlugin\Gateway\lyra_marketplaceGatewayFactory'
+            - 'Akki\SyliusPayumLyraMarketplacePlugin\Gateway\LyraMarketplaceGatewayFactory'
             - '@service_container'
         tags:
             - { name: payum.gateway_factory_builder, factory: lyra_marketplace }
