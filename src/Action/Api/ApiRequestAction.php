@@ -31,6 +31,11 @@ class ApiRequestAction extends AbstractApiAction
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
+        if ($model['url_marketplace']) {
+            return;
+        }
+        $model['url_marketplace'] = true;
+
         $url = $this->api->retrieveMarketPlaceUrl($model['order_id'],$model['url_success']);
 
         throw new HttpRedirect($url);

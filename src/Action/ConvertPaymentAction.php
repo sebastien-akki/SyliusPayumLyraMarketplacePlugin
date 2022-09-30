@@ -42,7 +42,6 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
-        $model['url_marketplace'] = true;
         $model['order_id'] = $order->getNumber();
 
         $request->setResult((array)$model);
