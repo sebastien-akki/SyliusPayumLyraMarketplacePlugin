@@ -44,9 +44,12 @@ class LyraMarketplaceService
 
     private $sellersApi ;
 
-    public function __construct(EntityManagerInterface $entityManager, Configuration $configuration)
+    private $marketplaceUUID = null;
+
+    public function __construct(EntityManagerInterface $entityManager, Configuration $configuration, string $marketplaceUUID)
     {
         $this->entityManagerInterface = $entityManager ;
+        $this->marketplaceUUID = $marketplaceUUID ;
         $this->orderSerializer = new OrderSerializer() ;
         $this->ordersApi = new OrdersApi(new Client(), $configuration) ;
         $this->marketplaceApi = new MarketplacesApi(new Client(), $configuration) ;
@@ -200,7 +203,7 @@ class LyraMarketplaceService
         $data->setItems($this->items) ;
         if (!$update){
 
-            $data->setMarketplace(getenv('UUID_MARKETPLACE')) ;
+            $data->setMarketplace($this->marketplaceUUID) ;
             $data->setReference($order->getNumber());
             $data->setDescription($order->getNumber());
 

@@ -64,7 +64,7 @@ class Api
         }
 
         if ($order instanceof Order){
-            $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace());
+            $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
             $marketplaceService->generate($order,$returnUrl);
             return $order->getLyraMarketplacePaymentUrl();
         }
@@ -123,6 +123,17 @@ class Api
     {
         $this->ensureApiIsConfigured();
         return (string)$this->config['username'];
+    }
+
+    /**
+     * retrieve marketplace username.
+     *
+     * @return string
+     */
+    public function getMarketplaceUUID(): string
+    {
+        $this->ensureApiIsConfigured();
+        return (string)$this->config['marketplace_uuid'];
     }
 
     /**
