@@ -1,0 +1,5 @@
+name: syliupayumlyramarketplaceplugin
+recipe: lamp
+config:
+  webroot: .
+  php: 7.4

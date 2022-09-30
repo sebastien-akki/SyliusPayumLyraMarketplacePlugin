@@ -1,0 +1,6 @@
+akki:
+  lyra_marketplace:
+    username:
+      not_blank: traduction_missing
+    password:
+      not_blank: traduction_missing

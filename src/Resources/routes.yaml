@@ -1,0 +1,5 @@
+lira_marketplace_list:
+  path: /listMarketPlace/list
+  methods: [GET]
+  defaults:
+    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\LyraMarketPlaceApiTestController:listMarketPlace

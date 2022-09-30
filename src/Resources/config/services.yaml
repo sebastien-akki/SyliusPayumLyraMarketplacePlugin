@@ -1,0 +1,14 @@
+services:
+    akki.lyra_marketplace.form.type.gateway_configuration:
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Form\Type\LyraMarketplaceGatewayConfigurationType
+        tags:
+            - { name: sylius.gateway_configuration_type, type: lyra_marketplace, label: akki.lyra_marketplace.gateway_label }
+            - { name: form.type }
+
+    akki.lyra_marketplace.gateway_factory:
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Builder\LyraMarketplaceGatewayFactoryBuilder
+        arguments:
+            - 'Akki\SyliusPayumLyraMarketplacePlugin\Gateway\lyra_marketplaceGatewayFactory'
+            - '@service_container'
+        tags:
+            - { name: payum.gateway_factory_builder, factory: lyra_marketplace }

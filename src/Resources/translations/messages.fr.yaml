@@ -1,0 +1,14 @@
+akki:
+  lyra_marketplace:
+    gateway_label: Lyra Marketplace paiement
+    fields:
+      username:
+        label: Username
+        help: Username
+      password:
+        label: Mot de passe
+      ctx_mode:
+        label: Mode
+    ctx_mode:
+      production: Production
+      test: Test

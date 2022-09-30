@@ -1,0 +1,14 @@
+akki:
+  lyra_marketplace:
+    gateway_label: Lyra Marketplace paiement
+    fields:
+      username:
+        label: traduction_missing
+        help: traduction_missing
+      password:
+        label: traduction_missing
+      ctx_mode:
+        label: traduction_missing
+    ctx_mode:
+      production: traduction_missing
+      test: traduction_missing

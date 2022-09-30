@@ -1,0 +1,10 @@
+/vendor/
+/composer.lock
+/.idea/
+Thumbs.db
+ehthumbs.db
+.DS_Store
+vendor
+cache
+composer.lock
+.phpunit.result.cache

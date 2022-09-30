@@ -1,0 +1,37 @@
+{
+  "name": "akki/sylius-payum-lyra-marketplace-plugin",
+  "description": "Payum Lyra Marketplace Bridge for Sylius",
+  "type": "sylius-plugin",
+  "require": {
+    "payum/core": "~1.5",
+    "php": "~7.3",
+    "php-http/guzzle6-adapter": "^1.1|~2.0",
+    "psr/log": "~1.0",
+    "sylius/sylius": "~1.7|~1.5",
+    "symfony/process": "~2.7|~3.0|~4.0",
+    "akki/syliuslyramarketplaceapiclient": "dev-develop"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Akki",
+      "email": "support@akki.fr"
+    }
+  ],
+  "repositories": {
+    "akkiLyraMarketplace": {
+      "type": "git",
+      "url": "https://github.com/sebastien-akki/SyliusLyraMarketplaceApiClient.git"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Akki\\SyliusPayumLyraMarketplacePlugin\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
