@@ -24,6 +24,7 @@
       "url": "https://github.com/sebastien-akki/SyliusLyraMarketplaceApiClient.git"
     }
   },
+  "prefer-stable": false,
   "autoload": {
     "psr-4": {
       "Akki\\SyliusPayumLyraMarketplacePlugin\\": "src/"
