@@ -165,9 +165,11 @@ class Api
                 'username',
                 'password',
                 'ctx_mode',
+                'marketplace_uuid',
             ])
             ->setAllowedTypes('username', 'string')
             ->setAllowedTypes('password', 'string')
+            ->setAllowedTypes('marketplace_uuid', 'string')
             ->setAllowedValues('ctx_mode', $this->getModes())
             ;
 

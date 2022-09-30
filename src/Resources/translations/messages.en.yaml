@@ -5,6 +5,9 @@ akki:
       username:
         label: traduction_missing
         help: traduction_missing
+      marketplace_uuid:
+        label: traduction_missing
+        help: traduction_missing
       password:
         label: traduction_missing
       ctx_mode:

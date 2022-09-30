@@ -5,6 +5,9 @@ akki:
       username:
         label: Username
         help: Username
+      marketplace_uuid:
+        label: UUID Marketplace
+        help: UUID Marketplace
       password:
         label: Mot de passe
       ctx_mode:

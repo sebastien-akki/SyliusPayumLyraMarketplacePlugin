@@ -34,7 +34,6 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-
         if ($request->getToken()) {
             $model['url_success'] = $request->getToken()->getTargetUrl();
 
@@ -48,11 +47,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
             }
         }
 
-        if (!$model['url_marketplace']) {
-            $this->gateway->execute(new Request($model));
-        }
-
-        $this->gateway->execute(new Sync($model));
+        $this->gateway->execute(new Request($model));
     }
 
     /**

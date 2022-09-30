@@ -79,11 +79,12 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
                 'username'     => null,
                 'password' => null,
                 'ctx_mode'    => null,
+                'marketplace_uuid'    => null,
             ];
 
             $config->defaults($config['payum.default_options']);
 
-            $config['payum.required_options'] = ['username', 'password', 'ctx_mode',];
+            $config['payum.required_options'] = ['username', 'password', 'ctx_mode', 'marketplace_uuid',];
 
             $container = $this->container;
 
@@ -94,6 +95,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
                     'username'     => $config['username'],
                     'password' => $config['password'],
                     'ctx_mode'    => $config['ctx_mode'],
+                    'marketplace_uuid'    => $config['marketplace_uuid'],
                 ];
 
                 $api = new Api();

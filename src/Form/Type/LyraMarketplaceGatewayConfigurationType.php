@@ -44,6 +44,16 @@ final class LyraMarketplaceGatewayConfigurationType extends AbstractType
                     'akki.lyra_marketplace.ctx_mode.test' => Api::MODE_TEST
                 ],
             ])
+            ->add('marketplace_uuid', TextType::class, [
+                'label' => 'akki.lyra_marketplace.fields.marketplace_uuid.label',
+                'help' => 'akki.lyra_marketplace.fields.marketplace_uuid.help',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'akki.lyra_marketplace.marketplace_uuid.not_blank',
+                        'groups' => ['sylius']
+                    ]),
+                ],
+            ])
         ;
     }
 }

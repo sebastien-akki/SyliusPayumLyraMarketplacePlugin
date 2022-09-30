@@ -42,7 +42,7 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
         /** @var OrderInterface $order */
         $order = $payment->getOrder();
 
-        $model['order_id'] = $order->getNumber();
+        $model['order_id'] = $order->getId();
 
         $request->setResult((array)$model);
     }
