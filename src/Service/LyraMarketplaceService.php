@@ -240,6 +240,7 @@ class LyraMarketplaceService
         $data->setUrlRefused($returnUrl);
         $data->setUrlCancel($returnUrl);
         $data->setUrlError($returnUrl);
+        $data->setLanguage(OrderSerializer::LANGUAGE_FR);
 
         $this->orderSerializer = $data ;
     }
@@ -257,22 +258,23 @@ class LyraMarketplaceService
 
             $itemSerializer = $lyraOrderItem ?? new ItemSerializer();
             if (!$update){
-                $vendor = null ;
                 if (!empty($item->getProduct()->getVendor())){
                     $vendor = $item->getProduct()->getVendor() ;
+                    $sellerUuid = $vendor->getSellerUuid();
+                } else {
+                    $sellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
                 }
-                $itemSerializer->setSeller($vendor->getSellerUuid()) ;
+
+                $itemSerializer->setSeller($sellerUuid) ;
                 $itemSerializer->setReference($item->getProduct()->getCode()) ;
                 $itemSerializer->setDescription($item->getProductName()) ;
                 $itemSerializer->setType(ItemSerializer::TYPE_ENTERTAINMENT) ;
             }
             $itemSerializer->setAmount($item->getTotal()) ;
 
-            $isCommission = false ;
+            $isCommission = $item->getProduct()->getVendor() !== null;
 
-            if ($item->getProduct()->getVendor() !== null){
-                $isCommission = true ;
-            }
+
             $itemSerializer->setIsCommission($isCommission);
 
             if ($isCommission){
