@@ -60,9 +60,9 @@ class LyraMarketplaceService
     /**
      * @param Order $order
      * @param String $returnUrl
-     * @return object|null
+     * @return mixed
      */
-    public function generate(Order $order, String $returnUrl): ?object
+    public function generate(Order $order, String $returnUrl)
     {
         // si on est sur un paiement de type marketplace
         $lastPayment = $order->getLastPayment();
