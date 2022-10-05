@@ -35,7 +35,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         if ($request->getToken()) {
-            $model['url_success'] = $request->getToken()->getTargetUrl();
+            $model['url_success'] = $request->getToken()->getAfterUrl();
 
             // Notify url
             if (empty($model['url_check']) && $this->tokenFactory) {
