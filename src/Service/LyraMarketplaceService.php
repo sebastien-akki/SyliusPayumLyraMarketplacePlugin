@@ -90,7 +90,7 @@ class LyraMarketplaceService
             $uuid = $responseCreateOrder->getUuid();
             $responseExecuteOrder = $this->executeOrder($uuid);
             if ($responseExecuteOrder) {
-                $order->setLyraMarketplacePaymentUrl($responseExecuteOrder->payment_url);
+                $order->setLyraMarketplacePaymentUrl($responseExecuteOrder['payment_url']);
                 $this->entityManagerInterface->flush();
                 return $responseExecuteOrder;
             }
