@@ -9,7 +9,9 @@
     "psr/log": "~1.0",
     "sylius/sylius": "~1.7|~1.5",
     "symfony/process": "~2.7|~3.0|~4.0",
-    "akki/syliuslyramarketplaceapiclient": "dev-develop"
+    "akki/syliuslyramarketplaceapiclient": "dev-develop",
+    "ext-json": "*",
+    "ext-http": "*"
   },
   "license": "MIT",
   "authors": [

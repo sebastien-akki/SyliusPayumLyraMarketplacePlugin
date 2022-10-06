@@ -12,3 +12,11 @@ services:
             - '@service_container'
         tags:
             - { name: payum.gateway_factory_builder, factory: lyra_marketplace }
+
+    #notify
+    Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController:
+        public: true
+        arguments:
+            - '@service_container'
+            - '@sylius.repository.payment_method'
+            - '@sylius.repository.order'

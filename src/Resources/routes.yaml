@@ -3,3 +3,8 @@ lira_marketplace_list:
   methods: [GET]
   defaults:
     _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\LyraMarketPlaceApiTestController:listMarketPlace
+
+km_sylius_payum_slimpay_notify:
+  path: /marketplace/notify
+  defaults:
+    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doAction

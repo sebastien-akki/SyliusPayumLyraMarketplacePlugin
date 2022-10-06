@@ -5,7 +5,9 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Api;
 use Akki\SyliusPayumLyraMarketplacePlugin\Service\LyraMarketplaceService;
 use Doctrine\Persistence\ObjectManager;
 use Payum\Core\Exception\LogicException;
+use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
+use Swagger\Client\Model\OrderSerializer;
 use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -70,6 +72,26 @@ class Api
         }
 
         return "";
+    }
+
+    /**
+     * @param Order|null $order
+     *
+     * @return OrderSerializer|null
+     *
+     * @throws ApiException
+     */
+    public function retrieveOrder(?Order $order): ?OrderSerializer
+    {
+        /** @var ObjectManager  $entityManager */
+        $entityManager = $this->container->get('sylius.manager.order');
+
+        if ($order instanceof Order){
+            $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
+            return $marketplaceService->readOrder($order);
+        }
+
+        return null;
     }
 
     private function createConfigurationMarketplace(): Configuration
