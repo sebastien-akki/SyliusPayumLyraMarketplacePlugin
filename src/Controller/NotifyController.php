@@ -5,7 +5,6 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Controller;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Api\Api;
 use Exception;
-use http\Exception\RuntimeException;
 use Payum\Bundle\PayumBundle\Controller\PayumController;
 use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Request\Notify;
@@ -113,7 +112,7 @@ class NotifyController extends PayumController
             } elseif (is_string($json)) {
                 $json = json_decode(trim($json) ? $json : '{}', true, 512, JSON_THROW_ON_ERROR);
             } else {
-                throw new RuntimeException("JSON must be a string, an array or an object ('" . gettype($json) . "' provided).");
+                throw new \RuntimeException("JSON must be a string, an array or an object ('" . gettype($json) . "' provided).");
             }
         }
 
