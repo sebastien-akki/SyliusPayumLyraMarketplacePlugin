@@ -30,6 +30,11 @@ class StatusAction implements ActionInterface
             return;
         }
 
+        if (array_key_exists('vads_result',$_REQUEST)) {
+            $data = array_merge($model->getArrayCopy(), $_REQUEST);
+            $model->replace($data);
+        }
+
         if (false != $code = $model['vads_result']) {
             switch ($code) {
                 case "00" : // transaction approuvée ou traitée avec succès
