@@ -63,7 +63,7 @@ class NotifyController extends PayumController
         $api->setContainer($this->container);
 
         /** @var ?Order $order  */
-        $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $json->order]);
+        $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $json['order']]);
 
         if (!($order instanceof Order)){
             return new Response('', Response::HTTP_BAD_REQUEST);
