@@ -16,6 +16,7 @@ use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Payment\Model\Payment;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class NotifyController extends PayumController
@@ -51,7 +52,7 @@ class NotifyController extends PayumController
      * @throws ApiException
      * @throws Exception
      */
-    public function doAction(): Response
+    public function doAction(Request $request): Response
     {
         $body = file_get_contents('php://input');
         $json = $this->fromJson($body);
