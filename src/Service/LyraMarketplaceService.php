@@ -349,7 +349,7 @@ class LyraMarketplaceService
     {
         $commissionRate = $this->getCommissionRateForOrderItem($orderItem);
 
-        return $orderItem->getTotal() * $commissionRate ;
+        return $orderItem->getTotal() * $commissionRate / 100 ;
 
     }
 
