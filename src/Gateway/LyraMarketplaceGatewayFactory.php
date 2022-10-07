@@ -4,6 +4,7 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Gateway;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ApiRequestAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ApiResponseAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncOrderAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CancelAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CaptureAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\ConvertPaymentAction;
@@ -72,6 +73,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
             'payum.action.notify'          => new NotifyAction(),
             'payum.action.api.request'     => new ApiRequestAction(),
             'payum.action.api.response'    => new ApiResponseAction(),
+            'payum.action.api.sync_order'  => new SyncOrderAction(),
         ]);
 
         if (!$config['payum.api']) {

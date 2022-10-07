@@ -100,36 +100,16 @@ class LyraMarketplaceService
     }
 
     /**
-     * @param Order $order
+     * @param string $uuid
      *
      * @return OrderSerializer|null
      *
      * @throws ApiException
      */
-    public function readOrder(Order $order)
+    public function readOrder(string $uuid): ?OrderSerializer
     {
-        // si on est sur un paiement de type marketplace
-        $lastPayment = $order->getLastPayment();
 
-        if (!($lastPayment instanceof PaymentInterface)){
-            return null;
-        }
-
-        /** @var PaymentMethodInterface|null $paymentMethod */
-        $paymentMethod = $lastPayment->getMethod();
-
-        if (!($paymentMethod instanceof PaymentMethodInterface)){
-            return null;
-        }
-
-        /** @var GatewayConfigInterface|null $gatewayConfig */
-        $gatewayConfig = $paymentMethod->getGatewayConfig();
-
-        if (!($gatewayConfig instanceof GatewayConfigInterface)){
-            return null;
-        }
-
-        return $this->ordersApi->ordersRead($order->getLyraOrderUuid());
+        return $this->ordersApi->ordersRead($uuid);
     }
 
     /**

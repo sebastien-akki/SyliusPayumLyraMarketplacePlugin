@@ -21,21 +21,6 @@ class ApiResponseAction extends AbstractApiAction
     {
         /** @var Response $request */
         RequestNotSupportedException::assertSupports($this, $request);
-
-        $model = ArrayObject::ensureArrayObject($request->getModel());
-
-        $this->gateway->execute($httpRequest = new GetHttpRequest());
-
-        if (!empty($httpRequest->request)) {
-            $data = $httpRequest->request;
-        } elseif (!empty($httpRequest->query)) {
-            $data = $httpRequest->query;
-        } else {
-            return;
-        }
-
-        $model->replace($data);
-        $request->setModel($model);
     }
 
     /**

@@ -49,9 +49,9 @@ class Api
      * @param string $orderId
      * @param String $returnUrl
      *
-     * @return string
+     * @return array
      */
-    public function retrieveMarketPlaceUrl(string $orderId, String $returnUrl): string
+    public function retrieveMarketPlaceUrl(string $orderId, String $returnUrl): array
     {
         /** @var ObjectManager  $entityManager */
         $entityManager = $this->container->get('sylius.manager.order');
@@ -62,33 +62,47 @@ class Api
         $order = $entityRepository !== null ? $entityRepository->find((int)$orderId) : null;
 
         if ($order instanceof Order && !empty($order->getLyraMarketplacePaymentUrl())){
-            return $order->getLyraMarketplacePaymentUrl();
+
+            return array(
+                'url' => $order->getLyraMarketplacePaymentUrl(),
+                'uuid' => $order->getLyraOrderUuid(),
+                'order' => $order,
+            );
         }
 
         if ($order instanceof Order){
             $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
             $marketplaceService->generate($order,$returnUrl);
-            return $order->getLyraMarketplacePaymentUrl();
+
+            return array(
+                'url' => $order->getLyraMarketplacePaymentUrl(),
+                'uuid' => $order->getLyraOrderUuid(),
+                'order' => $order,
+            );
         }
 
-        return "";
+        return array(
+            'url' => "",
+            'uuid' => "",
+            'order' => "",
+        );
     }
 
     /**
-     * @param Order|null $order
+     * @param string|null $uuid
      *
      * @return OrderSerializer|null
      *
      * @throws ApiException
      */
-    public function retrieveOrder(?Order $order): ?OrderSerializer
+    public function retrieveOrder(?string $uuid): ?OrderSerializer
     {
         /** @var ObjectManager  $entityManager */
         $entityManager = $this->container->get('sylius.manager.order');
 
-        if ($order instanceof Order){
+        if ($uuid !== null){
             $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
-            return $marketplaceService->readOrder($order);
+            return $marketplaceService->readOrder($uuid);
         }
 
         return null;

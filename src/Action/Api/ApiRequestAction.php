@@ -4,13 +4,10 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Action\Api;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Request;
 use ArrayAccess;
-use DateTime;
-use DateTimeZone;
 use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Reply\HttpRedirect;
-use function array_key_exists;
 
 /**
  * Class RequestAction
@@ -31,11 +28,20 @@ class ApiRequestAction extends AbstractApiAction
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $model['url_marketplace'] = true;
+        $model['url_marketplace_known'] = true;
 
-        $url = $this->api->retrieveMarketPlaceUrl($model['order_id'],$model['url_success']);
+        if (!($model['order'])) {
+            $result = $this->api->retrieveMarketPlaceUrl($model['order_id'],$model['url_success']);
+            $model['url_marketplace'] = $result['url'];
+            $model['uuid'] = $result['uuid'];
+            $orderSerializer = $this->api->retrieveOrder($model['uuid']);
+            if ($orderSerializer !== null) {
+                $model['order'] = $orderSerializer->__toString();
+            }
+        }
 
-        throw new HttpRedirect($url);
+
+        throw new HttpRedirect($model['url_marketplace']);
     }
 
     /**

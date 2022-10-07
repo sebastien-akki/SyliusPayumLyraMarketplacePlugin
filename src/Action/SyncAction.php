@@ -2,6 +2,7 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Response;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
@@ -30,7 +31,9 @@ class SyncAction implements ActionInterface, GatewayAwareInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $this->gateway->execute(new Response($model));
+        if($model['order']) {
+            $this->gateway->execute(new SyncOrder($model));
+        }
     }
 
     /**

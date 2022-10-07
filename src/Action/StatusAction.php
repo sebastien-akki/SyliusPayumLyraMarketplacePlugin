@@ -2,22 +2,32 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
 use ArrayAccess;
+use JsonException;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\GetStatusInterface;
+use Swagger\Client\Model\OrderSerializer;
+use Swagger\Client\ObjectSerializer;
 
 /**
  * Class StatusAction
  * @package Akki\SyliusPayumLyraMarketplacePlugin\Action
  */
-class StatusAction implements ActionInterface
+class StatusAction implements ActionInterface, GatewayAwareInterface
 {
+
+    use GatewayAwareTrait;
+
     /**
      * {@inheritdoc}
      *
      * @param GetStatusInterface $request
+     * @throws JsonException
      */
     public function execute($request): void
     {
@@ -25,58 +35,23 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (false == $model['url_marketplace']) {
-            $request->markNew();
-            return;
-        }
-
-        if (array_key_exists('vads_result',$_REQUEST)) {
-            $data = array_merge($model->getArrayCopy(), $_REQUEST);
-            $model->replace($data);
-        }
-
-        if (false != $code = $model['vads_result']) {
+        if($model['order']) {
+            $this->gateway->execute(new SyncOrder($model));
+            $order = ObjectSerializer::deserialize(json_decode($model['order'], false, 512, JSON_THROW_ON_ERROR), OrderSerializer::class, []);
+            $code = $order->getStatus();
             switch ($code) {
-                case "00" : // transaction approuvée ou traitée avec succès
+                case OrderSerializer::STATUS_PENDING :
+                case OrderSerializer::STATUS_SUCCEEDED : // transaction approuvée ou traitée avec succès
                     $request->markCaptured();
                     break;
-                case "02" : // contacter l’émetteur de carte
-                    $request->markPending(); // TODO is that the good status ?
-                    break;
-                case "17" : // Annulation client.
+                case OrderSerializer::STATUS_CREATED :
+                case OrderSerializer::STATUS_CANCELLED :
                     $request->markCanceled();
                     break;
-                case "03" : // accepteur invalide
-                case "04" : // conserver la carte
-                case "05" : // ne pas honorer
-                case "07" : // conserver la carte, conditions spéciales
-                case "08" : // approuver après identification
-                case "12" : // transaction invalide
-                case "13" : // montant invalide
-                case "14" : // numéro de porteur invalide
-                case "30" : // erreur de format
-                case "31" : // identifiant de l’organisme acquéreur inconnu
-                case "33" : // date de validité de la carte dépassée
-                case "34" : // suspicion de fraude
-                case "41" : // carte perdue
-                case "43" : // carte volée
-                case "51" : // provision insuffisante ou crédit dépassé
-                case "54" : // date de validité de la carte dépassée
-                case "56" : // carte absente du fichier
-                case "57" : // transaction non permise à ce porteur
-                case "58" : // transaction interdite au terminal
-                case "59" : // suspicion de fraude
-                case "60" : // l’accepteur de carte doit contacter l’acquéreur
-                case "61" : // montant de retrait hors limite
-                case "63" : // règles de sécurité non respectées
-                case "68" : // réponse non parvenue ou reçue trop tard
-                case "90" : // arrêt momentané du système
-                case "91" : // émetteur de cartes inaccessible
-                case "96" : // mauvais fonctionnement du système
-                case "94" : // transaction dupliquée
-                case "97" : // échéance de la temporisation de surveillance globale
-                case "98" : // serveur indisponible routage réseau demandé à nouveau
-                case "99" : // incident domaine initiateur
+                case OrderSerializer::STATUS_FAILED :
+                    $request->markNew();
+                    break;
+                case OrderSerializer::STATUS_ABANDONED :
                     $request->markFailed();
                     break;
                 default :
@@ -89,6 +64,16 @@ class StatusAction implements ActionInterface
             }
             return;
         }
+
+        if (!$model['url_marketplace_known']) {
+            $request->markNew();
+            return;
+        }
+
+//        if (array_key_exists('vads_result',$_REQUEST)) {
+//            $data = array_merge($model->getArrayCopy(), $_REQUEST);
+//            $model->replace($data);
+//        }
 
         $code = $model['status'];
         if ($code === 'canceled') {

@@ -70,7 +70,7 @@ class NotifyController extends PayumController
             return new Response('', Response::HTTP_BAD_REQUEST);
         }
 
-        $orderInfos = $api->retrieveOrder($order);
+        $orderInfos = $api->retrieveOrder($order->getLyraOrderUuid());
 
         if ($orderInfos instanceof OrderSerializer){
             if (in_array($orderInfos->getStatus(), [OrderSerializer::STATUS_PENDING, OrderSerializer::STATUS_SUCCEEDED], true)) {
