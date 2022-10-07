@@ -86,7 +86,7 @@ class NotifyController extends PayumController
                 // Execute notify & status actions.
                 $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
 
-                $gateway->execute(new Notify($orderInfos));
+                $gateway->execute(new Notify($payment));
             }
             return new Response();
         }
