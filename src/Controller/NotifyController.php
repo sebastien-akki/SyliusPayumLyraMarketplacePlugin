@@ -67,7 +67,7 @@ class NotifyController extends PayumController
         $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $json['order']]);
 
         if (!($order instanceof Order)){
-            return new Response('', Response::HTTP_BAD_REQUEST);
+            return new Response();
         }
 
         $orderInfos = $api->retrieveOrder($order->getLyraOrderUuid());
@@ -88,10 +88,9 @@ class NotifyController extends PayumController
 
                 $gateway->execute(new Notify($payment));
             }
-            return new Response();
         }
 
-        return new Response('', Response::HTTP_BAD_REQUEST);
+        return new Response();
     }
 
     /**
