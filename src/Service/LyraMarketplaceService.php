@@ -285,12 +285,7 @@ class LyraMarketplaceService
             }
             $itemSerializer->setAmount($item->getTotal()) ;
 
-            $isCommission = $item->getProduct()->getVendor() !== null;
-
-
-            $itemSerializer->setIsCommission($isCommission);
-
-            if ($isCommission){
+            if ($item->getProduct()->getVendor() !== null){
                 $itemSerializer->setCommissionAmount($this->calculateCommissionForOrderItem($item));
             }
 
@@ -330,11 +325,11 @@ class LyraMarketplaceService
         $taxon = $product->getMainTaxon() ;
         $commissionRate = $product->getTauxCommissionRm();
 
-        if (null === $commissionRate || $commissionRate = 0){
+        if (null === $commissionRate || $commissionRate === 0){
             $commissionRate = $taxon->getEditorCommRate();
         }
 
-        if ((null === $commissionRate || $commissionRate = 0) && $product->getVendor() !== null) {
+        if ((null === $commissionRate || $commissionRate === 0) && $product->getVendor() !== null) {
             $commissionRate = $product->getVendor()->getTauxCommissionRm() ;
         }
 
