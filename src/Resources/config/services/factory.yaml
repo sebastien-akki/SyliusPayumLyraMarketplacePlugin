@@ -1,0 +1,4 @@
+services:
+
+  akki.sylius_payum_lyra_marketplace.factory.refund_request:
+    class: Akki\SyliusPayumLyraMarketplacePlugin\Factory\RefundRequestFactory

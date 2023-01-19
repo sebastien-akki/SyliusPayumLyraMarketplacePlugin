@@ -1,3 +1,7 @@
+imports:
+    - { resource: 'services/state_machine.yaml' }
+    - { resource: 'services/factory.yaml' }
+
 services:
     akki.lyra_marketplace.form.type.gateway_configuration:
         class: Akki\SyliusPayumLyraMarketplacePlugin\Form\Type\LyraMarketplaceGatewayConfigurationType

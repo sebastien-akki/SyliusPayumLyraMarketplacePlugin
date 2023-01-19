@@ -1,0 +1,8 @@
+winzou_state_machine:
+  sylius_payment:
+    callbacks:
+      before:
+        akki.sylius_payum_lyra_marketplace_refund:
+          on: ["refund"]
+          do: ["@akki.sylius_payum_lyra_marketplace.state_machine.refund", "__invoke"]
+          args: ["object"]

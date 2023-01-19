@@ -1,0 +1,13 @@
+services:
+
+  Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\AbstractOrderProcessor:
+    abstract: true
+    arguments:
+      $payum: '@payum'
+
+  akki.sylius_payum_lyra_marketplace.state_machine.refund:
+    public: true
+    parent: Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\AbstractOrderProcessor
+    class: Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\RefundOrderProcessor
+    arguments:
+      $refundRequestFactory: '@akki.sylius_payum_lyra_marketplace.factory.refund_request'
