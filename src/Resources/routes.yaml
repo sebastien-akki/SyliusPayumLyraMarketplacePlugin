@@ -1,11 +1,17 @@
-lira_marketplace_list:
+lyra_marketplace_list:
   path: /listMarketPlace/list
   methods: [GET]
   defaults:
     _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\LyraMarketPlaceApiTestController:listMarketPlace
 
-km_sylius_payum_slimpay_notify:
+km_sylius_payum_lyra_marketplace_order_notify:
   methods: [POST]
   path: /marketplace/notify
   defaults:
-    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doAction
+    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doOrderAction
+
+km_sylius_payum_lyra_marketplace_refund_notify:
+  methods: [POST]
+  path: /marketplace/refund/notify
+  defaults:
+    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doRefundAction

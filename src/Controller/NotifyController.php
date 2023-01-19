@@ -10,6 +10,7 @@ use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Request\Notify;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\OrderSerializer;
+use Swagger\Client\Model\Refund;
 use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -52,7 +53,7 @@ class NotifyController extends PayumController
      * @throws ApiException
      * @throws Exception
      */
-    public function doAction(Request $request): Response
+    public function doOrderAction(Request $request): Response
     {
         $body = file_get_contents('php://input');
         $json = $this->fromJson($body);
@@ -74,6 +75,53 @@ class NotifyController extends PayumController
 
         if ($orderInfos instanceof OrderSerializer){
             if (in_array($orderInfos->getStatus(), [OrderSerializer::STATUS_PENDING, OrderSerializer::STATUS_SUCCEEDED], true)) {
+                /** @var Payment $payment */
+                $payment = $order->getLastPayment();
+
+                /** @var PaymentMethodInterface $paymentMethod */
+                $paymentMethod = $payment->getMethod();
+
+                /** @var GatewayConfigInterface $gatewayConfig */
+                $gatewayConfig = $paymentMethod->getGatewayConfig();
+
+                // Execute notify & status actions.
+                $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
+
+                $gateway->execute(new Notify($payment));
+            }
+        }
+
+        return new Response();
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws ApiException
+     * @throws Exception
+     */
+    public function doRefundAction(Request $request): Response
+    {
+        $body = file_get_contents('php://input');
+        $json = $this->fromJson($body);
+
+        $lyraMarketplacePaymentMethod = $this->paymentMethodRepository->findOneBy(['code' => 'lyra_market_place']);
+
+        $api = new Api();
+        $api->setConfig($lyraMarketplacePaymentMethod->getGatewayConfig()->getConfig());
+        $api->setContainer($this->container);
+
+        $refund = $api->retrieveRefund($json['refund']);
+
+        /** @var ?Order $order  */
+        $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $refund->getOrder()]);
+
+        if (!($order instanceof Order)){
+            return new Response();
+        }
+
+        if ($refund instanceof Refund){
+            if (in_array($refund->getStatus(), [Refund::STATUS_SUCCEEDED, OrderSerializer::STATUS_FAILED, OrderSerializer::STATUS_CANCELLED], true)) {
                 /** @var Payment $payment */
                 $payment = $order->getLastPayment();
 

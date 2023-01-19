@@ -17,6 +17,8 @@ final class PaymentStates
     public const STATE_FAILED          = 'FAILED';
     public const STATE_ABANDONED       = 'ABANDONED';
 
+    public const STATE_REFUNDED       = 'REFUNDED';
+
     /**
      * Returns all the states.
      *

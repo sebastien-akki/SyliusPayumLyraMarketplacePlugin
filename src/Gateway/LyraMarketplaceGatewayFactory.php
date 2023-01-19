@@ -9,6 +9,7 @@ use Akki\SyliusPayumLyraMarketplacePlugin\Action\CancelAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CaptureAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\ConvertPaymentAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\NotifyAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\NotifyRefundAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\RefundAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\StatusAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\SyncAction;
@@ -71,6 +72,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
             'payum.action.refund'          => new RefundAction(),
             'payum.action.status'          => new StatusAction(),
             'payum.action.notify'          => new NotifyAction(),
+            'payum.action.notify_refund'   => new NotifyRefundAction(),
             'payum.action.api.request'     => new ApiRequestAction(),
             'payum.action.api.response'    => new ApiResponseAction(),
             'payum.action.api.sync_order'  => new SyncOrderAction(),

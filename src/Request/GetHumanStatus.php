@@ -160,7 +160,7 @@ class GetHumanStatus extends BaseGetStatus
      */
     public function isRefunded()
     {
-        // TODO: Implement method.
+        return $this->status === PaymentStates::STATE_REFUNDED;
     }
 
     /**
@@ -168,7 +168,7 @@ class GetHumanStatus extends BaseGetStatus
      */
     public function markRefunded()
     {
-        // TODO: Implement method.
+        $this->status = PaymentStates::STATE_REFUNDED;
     }
 
     /**

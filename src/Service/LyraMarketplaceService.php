@@ -9,12 +9,15 @@ use Payum\Core\Model\GatewayConfigInterface;
 use Swagger\Client\Api\ItemsApi;
 use Swagger\Client\Api\MarketplacesApi;
 use Swagger\Client\Api\OrdersApi;
+use Swagger\Client\Api\RefundsApi;
 use Swagger\Client\Api\SellersApi;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
 use Swagger\Client\Model\BuyerSerializerLegacy;
 use Swagger\Client\Model\ItemSerializer;
 use Swagger\Client\Model\OrderSerializer;
+use Swagger\Client\Model\Refund;
+use Swagger\Client\Model\RefundItem;
 use Swagger\Client\Model\ShippingSerializerLegacy;
 use Sylius\Component\Core\Model\Address;
 use Sylius\Component\Core\Model\Customer;
@@ -24,10 +27,13 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Customer\Model\CustomerInterface;
+use function getenv;
 
 class LyraMarketplaceService
 {
     private $ordersApi ;
+
+    private $refundsApi ;
 
     private $marketplaceApi ;
 
@@ -52,6 +58,7 @@ class LyraMarketplaceService
         $this->marketplaceUUID = $marketplaceUUID ;
         $this->orderSerializer = new OrderSerializer() ;
         $this->ordersApi = new OrdersApi(new Client(), $configuration) ;
+        $this->refundsApi = new RefundsApi(new Client(), $configuration) ;
         $this->marketplaceApi = new MarketplacesApi(new Client(), $configuration) ;
         $this->itemsApi = new ItemsApi(new Client(), $configuration) ;
         $this->sellersApi = new SellersApi(new Client(), $configuration) ;
@@ -113,6 +120,19 @@ class LyraMarketplaceService
     }
 
     /**
+     * @param string $uuid
+     *
+     * @return OrderSerializer|null
+     *
+     * @throws ApiException
+     */
+    public function readRefund(string $uuid): ?Refund
+    {
+
+        return $this->refundsApi->refundsRead($uuid);
+    }
+
+    /**
      * @param Order $order
      * @param String $returnUrl
      * @return OrderSerializer|void
@@ -158,6 +178,21 @@ class LyraMarketplaceService
         }catch (Exception $e){
             echo 'Exception when calling OrdersApi->ordersExecuteExecuteToken: ', $e->getMessage(), PHP_EOL;
 
+        }
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return Refund
+     */
+    public function refundOrder(Order $order)
+    {
+        $refund = $this->processOrderRefund($order);
+        try {
+            return $this->refundsApi->refundsCreate($refund);
+        } catch (Exception $e) {
+            echo 'Exception when calling refundsApi->refundsCreate: ', $e->getMessage(), PHP_EOL;
         }
     }
 
@@ -260,6 +295,27 @@ class LyraMarketplaceService
 
     /**
      * @param Order $order
+     *
+     * @return Refund
+     */
+    private function processOrderRefund(Order $order): Refund
+    {
+        $defaultSellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
+        $referenceRemboursement = "remb".$order->getId();
+        $refundItems = $this->hydrateRefundItemsFromOrder($order, $referenceRemboursement, $defaultSellerUuid);
+
+        $refund = new Refund();
+        $refund->setOrder($order->getLyraOrderUuid());
+        $refund->setReference($referenceRemboursement);
+        $refund->setDescription("Remboursement commande  #".$order->getNumber());
+        $refund->setCurrency($order->getCurrencyCode());
+        $refund->setItems($refundItems);
+
+        return $refund;
+    }
+
+    /**
+     * @param Order $order
      * @param bool $update
      * @return void
      */
@@ -293,6 +349,56 @@ class LyraMarketplaceService
 
         }
 
+    }
+
+    /**
+     * @param Order $order
+     * @param $referenceRemboursement
+     * @param $defaultSellerUuid
+     *
+     * @return RefundItem[]
+     */
+    private function hydrateRefundItemsFromOrder(Order $order, $referenceRemboursement, $defaultSellerUuid): array
+    {
+        $refundItems = [];
+        $totalCommissionAmount = 0;
+
+        /** @var OrderItem $item */
+        foreach ($order->getItems() as $item){
+            $refundItem = new RefundItem();
+
+            if (!empty($item->getProduct()->getVendor())){
+                $vendor = $item->getProduct()->getVendor() ;
+                $sellerUuid = $vendor->getSellerUuid();
+            } else {
+                $sellerUuid = $defaultSellerUuid;
+            }
+
+            $itemCommissionAmount = $this->calculateCommissionForOrderItem($item);
+            $totalCommissionAmount+= $itemCommissionAmount;
+            $itemTotal = $item->getTotal();
+            $itemTotalWithoutCommission = $itemTotal - $itemCommissionAmount;
+
+            $refundItem->setSeller($sellerUuid) ;
+            $refundItem->setReference($item->getProduct()->getCode());
+            $refundItem->setDescription($item->getProductName());
+            $refundItem->setAmount($itemTotalWithoutCommission);
+
+            $refundItems[] = $refundItem;
+            $refundItem->setSeller($sellerUuid) ;
+            $refundItem->setReference($referenceRemboursement.'_'.$item->getId());
+            $refundItem->setDescription($item->getProductName());
+            $refundItem->setAmount($itemTotalWithoutCommission);
+        }
+
+        //on ajoute la partie prise en charge par le gestionnaire
+        $refundItem = new RefundItem();
+        $refundItem->setSeller($defaultSellerUuid) ;
+        $refundItem->setReference($referenceRemboursement.'_gest');
+        $refundItem->setDescription("Gestionnaire");
+        $refundItem->setAmount($totalCommissionAmount);
+
+        return $refundItems;
     }
 
     /**

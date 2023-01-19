@@ -2,22 +2,18 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\GetHumanStatus;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\AbstractApiAction;
 use ArrayAccess;
-use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareInterface;
-use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Refund;
 
 /**
  * Class CaptureAction
  * @package Akki\SyliusPayumLyraMarketplacePlugin\Action
  */
-class RefundAction implements ActionInterface, GatewayAwareInterface
+class RefundAction extends AbstractApiAction
 {
-    use GatewayAwareTrait;
 
     /**
      * {@inheritdoc}
@@ -30,10 +26,10 @@ class RefundAction implements ActionInterface, GatewayAwareInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $this->gateway->execute($status = new GetHumanStatus($model));
+        $orderSerializer = $this->api->sendRefund($model['uuid']);
 
-        if ($status->isCaptured()) {
-            $model['status'] = 'refunded';
+        if ($orderSerializer !== null){
+            $model['refund'] =  $orderSerializer->__toString();
         }
     }
 

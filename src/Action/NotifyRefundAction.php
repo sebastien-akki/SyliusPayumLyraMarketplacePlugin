@@ -2,8 +2,7 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncRefund;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\NotifyRefund;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -13,37 +12,33 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Sync;
 
 /**
- * Class SyncAction
+ * Class NotifyRefundAction
  * @package Akki\SyliusPayumLyraMarketplacePlugin\Action
  */
-class SyncAction implements ActionInterface, GatewayAwareInterface
+class NotifyRefundAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @param Sync $request
+     * @param NotifyRefund $request
      */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $model = ArrayObject::ensureArrayObject($request->getModel());
+        $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        if($model['refund']) {
-            $this->gateway->execute(new SyncRefund($model));
-        } else if($model['order']) {
-            $this->gateway->execute(new SyncOrder($model));
-        }
+        $this->gateway->execute(new Sync($details));
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function supports($request): bool
     {
-        return $request instanceof Sync
+        return $request instanceof NotifyRefund
             && $request->getModel() instanceof ArrayAccess;
     }
 }

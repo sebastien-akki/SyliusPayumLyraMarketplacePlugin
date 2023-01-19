@@ -3,6 +3,7 @@
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncRefund;
 use ArrayAccess;
 use JsonException;
 use Payum\Core\Action\ActionInterface;
@@ -12,6 +13,7 @@ use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\GetStatusInterface;
 use Swagger\Client\Model\OrderSerializer;
+use Swagger\Client\Model\Refund;
 use Swagger\Client\ObjectSerializer;
 
 /**
@@ -34,6 +36,21 @@ class StatusAction implements ActionInterface, GatewayAwareInterface
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
+
+        if($model['refund']) {
+            $this->gateway->execute(new SyncRefund($model));
+            $refund = ObjectSerializer::deserialize(json_decode($model['refund'], false, 512, JSON_THROW_ON_ERROR), OrderSerializer::class, []);
+            $code = $refund->getStatus();
+            switch ($code) {
+                case Refund::STATUS_SUCCEEDED : // transaction approuvée ou traitée avec succès
+                    $request->markRefunded();
+                    break;
+                default :
+                    $request->markUnknown();
+            }
+
+            return;
+        }
 
         if($model['order']) {
             $this->gateway->execute(new SyncOrder($model));

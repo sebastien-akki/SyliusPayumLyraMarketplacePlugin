@@ -8,6 +8,7 @@ use Payum\Core\Exception\LogicException;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
 use Swagger\Client\Model\OrderSerializer;
+use Swagger\Client\Model\Refund;
 use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -97,12 +98,56 @@ class Api
      */
     public function retrieveOrder(?string $uuid): ?OrderSerializer
     {
-        /** @var ObjectManager  $entityManager */
+        /** @var ObjectManager $entityManager */
         $entityManager = $this->container->get('sylius.manager.order');
 
         if ($uuid !== null){
             $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
             return $marketplaceService->readOrder($uuid);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $orderId
+     *
+     * @return Refund|null
+     */
+    public function sendRefund(string $orderId): ?Refund
+    {
+        /** @var ObjectManager  $entityManager */
+        $entityManager = $this->container->get('sylius.manager.order');
+
+        /** @var RepositoryInterface $entityRepository */
+        $entityRepository = $this->container->get('sylius.repository.order');
+
+        $order = $entityRepository !== null ? $entityRepository->find((int)$orderId) : null;
+
+        if ($order instanceof Order && !empty($order->getLyraOrderUuid())){
+
+            $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
+            return $marketplaceService->refundOrder($order);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string|null $uuid
+     *
+     * @return OrderSerializer|null
+     *
+     * @throws ApiException
+     */
+    public function retrieveRefund(?string $uuid): ?Refund
+    {
+        /** @var ObjectManager $entityManager */
+        $entityManager = $this->container->get('sylius.manager.order');
+
+        if ($uuid !== null){
+            $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
+            return $marketplaceService->readRefund($uuid);
         }
 
         return null;
