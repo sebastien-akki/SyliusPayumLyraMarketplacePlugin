@@ -26,10 +26,10 @@ class RefundAction extends AbstractApiAction
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $orderSerializer = $this->api->sendRefund($model['uuid']);
+        $refund = $this->api->sendRefund($model['order_id']);
 
-        if ($orderSerializer !== null){
-            $model['refund'] =  $orderSerializer->__toString();
+        if ($refund !== null){
+            $model['refund'] =  $refund->__toString();
         }
     }
 

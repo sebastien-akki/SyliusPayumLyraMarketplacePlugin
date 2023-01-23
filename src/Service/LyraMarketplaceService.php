@@ -380,15 +380,10 @@ class LyraMarketplaceService
             $itemTotalWithoutCommission = $itemTotal - $itemCommissionAmount;
 
             $refundItem->setSeller($sellerUuid) ;
-            $refundItem->setReference($item->getProduct()->getCode());
-            $refundItem->setDescription($item->getProductName());
-            $refundItem->setAmount($itemTotalWithoutCommission);
-
-            $refundItems[] = $refundItem;
-            $refundItem->setSeller($sellerUuid) ;
             $refundItem->setReference($referenceRemboursement.'_'.$item->getId());
             $refundItem->setDescription($item->getProductName());
             $refundItem->setAmount($itemTotalWithoutCommission);
+            $refundItems[] = $refundItem;
         }
 
         //on ajoute la partie prise en charge par le gestionnaire
@@ -397,6 +392,7 @@ class LyraMarketplaceService
         $refundItem->setReference($referenceRemboursement.'_gest');
         $refundItem->setDescription("Gestionnaire");
         $refundItem->setAmount($totalCommissionAmount);
+        $refundItems[] = $refundItem;
 
         return $refundItems;
     }
