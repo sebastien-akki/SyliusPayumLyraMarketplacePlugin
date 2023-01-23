@@ -7,6 +7,7 @@ use ArrayAccess;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Refund;
+use Payum\Core\Request\Sync;
 
 /**
  * Class CaptureAction
@@ -31,6 +32,8 @@ class RefundAction extends AbstractApiAction
         if ($refund !== null){
             $model['refund'] =  $refund->__toString();
         }
+
+        $this->gateway->execute(new Sync($model));
     }
 
     /**

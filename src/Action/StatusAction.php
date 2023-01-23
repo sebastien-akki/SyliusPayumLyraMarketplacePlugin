@@ -45,6 +45,17 @@ class StatusAction implements ActionInterface, GatewayAwareInterface
                 case Refund::STATUS_SUCCEEDED : // transaction approuvée ou traitée avec succès
                     $request->markRefunded();
                     break;
+                case Refund::STATUS_CREATED :
+                case Refund::STATUS_PENDING :
+                    $request->markPending();
+                    break;
+                case Refund::STATUS_CANCELLED :
+                    $request->markCanceled();
+                    break;
+                case Refund::STATUS_FAILED :
+                case Refund::STATUS_ABANDONED :
+                    $request->markFailed();
+                    break;
                 default :
                     $request->markUnknown();
             }
