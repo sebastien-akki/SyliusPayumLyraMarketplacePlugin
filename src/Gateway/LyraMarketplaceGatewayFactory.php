@@ -68,16 +68,16 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
 
             'payum.action.capture'         => new CaptureAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
-            'payum.action.sync'            => new SyncAction(),
             'payum.action.cancel'          => new CancelAction(),
             'payum.action.refund'          => new RefundAction(),
-            'payum.action.status'          => new StatusAction(),
             'payum.action.notify'          => new NotifyAction(),
             'payum.action.notify_refund'   => new NotifyRefundAction(),
             'payum.action.api.request'     => new ApiRequestAction(),
             'payum.action.api.response'    => new ApiResponseAction(),
             'payum.action.api.sync_order'  => new SyncOrderAction(),
             'payum.action.api.sync_refund'  => new SyncRefundAction(),
+            'payum.action.status'          => new StatusAction(),
+            'payum.action.sync'            => new SyncAction(),
         ]);
 
         if (!$config['payum.api']) {
