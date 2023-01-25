@@ -31,8 +31,9 @@ class RefundAction extends AbstractApiAction
 
         if ($refund !== null){
             $model['refund'] =  $refund->__toString();
+            $model['refund_uuid'] = $refund->getUuid();
         } else {
-            $model['refund'] = null;
+            $model['refund'] = 'REFUSED';
         }
 
         $this->gateway->execute(new Sync($model));
