@@ -31,6 +31,8 @@ class RefundAction extends AbstractApiAction
 
         if ($refund !== null){
             $model['refund'] =  $refund->__toString();
+        } else {
+            $model['refund'] = null;
         }
 
         $this->gateway->execute(new Sync($model));
