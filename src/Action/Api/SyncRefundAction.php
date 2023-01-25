@@ -25,9 +25,11 @@ class SyncRefundAction extends AbstractApiAction
 
         $model->validateNotEmpty(['refund','refund_uuid']);
 
-        $refund = $this->api->retrieveRefund($model['refund_uuid']);
-        if ($refund !== null){
-            $model['$refund'] =  $refund->__toString();
+        if ($model['refund_uuid'] !== '0'){
+            $refund = $this->api->retrieveRefund($model['refund_uuid']);
+            if ($refund !== null){
+                $model['$refund'] =  $refund->__toString();
+            }
         }
     }
 
