@@ -34,7 +34,7 @@ class RefundAction extends AbstractApiAction
             $model['refund_uuid'] = $refund->getUuid();
         } else {
             $model['refund'] = 'REFUSED';
-            $model['refund_uuid'] = '0';
+            $model['refund_uuid'] = 'REFUSED';
         }
 
         $this->gateway->execute(new Sync($model));
