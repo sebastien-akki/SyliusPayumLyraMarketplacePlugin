@@ -74,7 +74,7 @@ class NotifyController extends PayumController
         $orderInfos = $api->retrieveOrder($order->getLyraOrderUuid());
 
         if ($orderInfos instanceof OrderSerializer){
-            if (in_array($orderInfos->getStatus(), [OrderSerializer::STATUS_PENDING, OrderSerializer::STATUS_SUCCEEDED], true)) {
+            if (in_array($orderInfos->getStatus(), [Refund::STATUS_PENDING, OrderSerializer::STATUS_PENDING, OrderSerializer::STATUS_SUCCEEDED], true)) {
                 /** @var Payment $payment */
                 $payment = $order->getLastPayment();
 

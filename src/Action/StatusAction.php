@@ -38,8 +38,14 @@ class StatusAction implements ActionInterface, GatewayAwareInterface
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         if($model['refund']) {
+
+            if ($model['refund'] === 'REFUSED'){
+                $request->markPending();
+                return;
+            }
+
             $this->gateway->execute(new SyncRefund($model));
-            $refund = ObjectSerializer::deserialize(json_decode($model['refund'], false, 512, JSON_THROW_ON_ERROR), OrderSerializer::class, []);
+            $refund = ObjectSerializer::deserialize(json_decode($model['refund'], false, 512, JSON_THROW_ON_ERROR), Refund::class, []);
             $code = $refund->getStatus();
             switch ($code) {
                 case Refund::STATUS_SUCCEEDED : // transaction approuvée ou traitée avec succès
