@@ -37,7 +37,7 @@ class RefundAction extends AbstractApiAction
             $model['refund_uuid'] = 'REFUSED';
         }
 
-        $this->gateway->execute($status = new GetHumanRefundStatus(model));
+        $this->gateway->execute($status = new GetHumanRefundStatus($model));
 //        $this->gateway->execute(new Sync($model));
     }
 

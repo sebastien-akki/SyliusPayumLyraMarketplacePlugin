@@ -24,3 +24,13 @@ services:
             - '@service_container'
             - '@sylius.repository.payment_method'
             - '@sylius.repository.order'
+
+    akki.lyra_marketplace.extension.update_payment_state:
+        public: true
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Extension\UpdatePaymentStateExtension
+        arguments:
+            $factory: '@sm.factory'
+        tags:
+            - name: payum.extension
+              factory: stripe_checkout_session
+              alias: flux_se.sylius_payum_stripe.extension.update_payment_state
