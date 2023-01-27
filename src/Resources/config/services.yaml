@@ -32,5 +32,5 @@ services:
             $factory: '@sm.factory'
         tags:
             - name: payum.extension
-              factory: stripe_checkout_session
+              factory: lyra_marketplace
               alias: flux_se.sylius_payum_stripe.extension.update_payment_state
