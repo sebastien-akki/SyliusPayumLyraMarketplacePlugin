@@ -4,7 +4,6 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Controller;
 
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Api\Api;
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\NotifyRefund;
 use Exception;
 use Payum\Bundle\PayumBundle\Controller\PayumController;
 use Payum\Core\Model\GatewayConfigInterface;
@@ -135,7 +134,7 @@ class NotifyController extends PayumController
                 // Execute notify & status actions.
                 $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
 
-                $gateway->execute(new NotifyRefund($payment));
+                $gateway->execute(new Notify($payment));
             }
         }
 
