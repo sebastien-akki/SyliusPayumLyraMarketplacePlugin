@@ -53,6 +53,7 @@ class NotifyController extends PayumController
      * @return Response
      *
      * @throws ApiException
+     * @throws Exception
      */
     public function doOrderAction(Request $request): Response
     {
@@ -60,6 +61,10 @@ class NotifyController extends PayumController
         $json = $this->fromJson($body);
 
         $lyraMarketplacePaymentMethod = $this->paymentMethodRepository->findOneBy(['code' => 'lyra_market_place']);
+
+        if ($lyraMarketplacePaymentMethod === null){
+            return new Response();
+        }
 
         $api = new Api();
         $api->setConfig($lyraMarketplacePaymentMethod->getGatewayConfig()->getConfig());
@@ -109,11 +114,19 @@ class NotifyController extends PayumController
 
         $lyraMarketplacePaymentMethod = $this->paymentMethodRepository->findOneBy(['code' => 'lyra_market_place']);
 
+        if ($lyraMarketplacePaymentMethod === null){
+            return new Response();
+        }
+
         $api = new Api();
         $api->setConfig($lyraMarketplacePaymentMethod->getGatewayConfig()->getConfig());
         $api->setContainer($this->container);
 
         $refund = $api->retrieveRefund($json['refund']);
+
+        if (!($refund instanceof Refund)){
+            return new Response();
+        }
 
         /** @var ?Order $order  */
         $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $refund->getOrder()]);
@@ -122,22 +135,20 @@ class NotifyController extends PayumController
             return new Response();
         }
 
-        if ($refund instanceof Refund){
-            if (in_array($refund->getStatus(), [Refund::STATUS_SUCCEEDED, Refund::STATUS_FAILED, Refund::STATUS_CANCELLED, Refund::STATUS_PENDING, Refund::STATUS_ABANDONED], true)) {
-                /** @var Payment $payment */
-                $payment = $order->getLastPayment();
+        if (in_array($refund->getStatus(), [Refund::STATUS_SUCCEEDED, Refund::STATUS_FAILED, Refund::STATUS_CANCELLED, Refund::STATUS_PENDING, Refund::STATUS_ABANDONED], true)) {
+            /** @var Payment $payment */
+            $payment = $order->getLastPayment();
 
-                /** @var PaymentMethodInterface $paymentMethod */
-                $paymentMethod = $payment->getMethod();
+            /** @var PaymentMethodInterface $paymentMethod */
+            $paymentMethod = $payment->getMethod();
 
-                /** @var GatewayConfigInterface $gatewayConfig */
-                $gatewayConfig = $paymentMethod->getGatewayConfig();
+            /** @var GatewayConfigInterface $gatewayConfig */
+            $gatewayConfig = $paymentMethod->getGatewayConfig();
 
-                // Execute notify & status actions.
-                $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
+            // Execute notify & status actions.
+            $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
 
-                $gateway->execute(new NotifyRefund($payment));
-            }
+            $gateway->execute(new NotifyRefund($payment));
         }
 
         return new Response();
