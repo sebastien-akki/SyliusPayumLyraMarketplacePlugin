@@ -2,6 +2,7 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\GetHumanRefundStatus;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\NotifyRefund;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
@@ -30,7 +31,8 @@ class NotifyRefundAction implements ActionInterface, GatewayAwareInterface
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        $this->gateway->execute(new Sync($details));
+        //$this->gateway->execute(new Sync($details));
+        $this->gateway->execute($status = new GetHumanRefundStatus($details));
     }
 
     /**
