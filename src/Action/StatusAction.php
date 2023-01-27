@@ -41,7 +41,7 @@ class StatusAction implements ActionInterface, GatewayAwareInterface
         if($model['refund']) {
 
             if ($model['refund'] === 'REFUSED'){
-                $request->markPending();
+                $request->markFailed();
                 return;
             }
 
