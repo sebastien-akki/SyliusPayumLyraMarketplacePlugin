@@ -3,12 +3,11 @@
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\AbstractApiAction;
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\GetHumanStatus;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\GetHumanRefundStatus;
 use ArrayAccess;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\Refund;
-use Payum\Core\Request\Sync;
 
 /**
  * Class CaptureAction
@@ -38,7 +37,7 @@ class RefundAction extends AbstractApiAction
             $model['refund_uuid'] = 'REFUSED';
         }
 
-        $this->gateway->execute($status = new GetHumanStatus($model));
+        $this->gateway->execute($status = new GetHumanRefundStatus(model));
 //        $this->gateway->execute(new Sync($model));
     }
 
