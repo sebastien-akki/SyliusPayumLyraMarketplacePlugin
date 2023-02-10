@@ -336,7 +336,7 @@ class LyraMarketplaceService
 
                 $itemSerializer->setSeller($sellerUuid) ;
                 $itemSerializer->setReference($item->getProduct()->getCode()) ;
-                $itemSerializer->setDescription($item->getProductName()) ;
+                $itemSerializer->setDescription($this->cleanDescription($item->getProductName())) ;
                 $itemSerializer->setType(ItemSerializer::TYPE_ENTERTAINMENT) ;
             }
             $itemSerializer->setAmount($item->getTotal()) ;
@@ -481,5 +481,14 @@ class LyraMarketplaceService
             echo 'Exception when calling itemsApi->itemsRead : ', $e->getMessage(), PHP_EOL;
         }
     }
+
+    /**
+     * @param $description
+     * @return string|string[]|null
+     */
+    public function cleanDescription($description) {
+        return preg_replace("/[^-\w ]/", "", $description);
+    }
+
 
 }
