@@ -28,7 +28,7 @@ class SyncRefundAction extends AbstractApiAction
         if ($model['refund_uuid'] !== 'REFUSED'){
             $refund = $this->api->retrieveRefund($model['refund_uuid']);
             if ($refund !== null){
-                $model['$refund'] =  $refund->__toString();
+                $model['refund'] =  $refund->__toString();
             }
         }
     }
