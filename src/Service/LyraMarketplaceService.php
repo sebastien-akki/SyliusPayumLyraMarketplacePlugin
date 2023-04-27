@@ -252,8 +252,8 @@ class LyraMarketplaceService
         if (!$update){
 
             $data->setMarketplace($this->marketplaceUUID) ;
-            $data->setReference($order->getNumber());
-            $data->setDescription($order->getNumber());
+            $data->setReference($order->getId());
+            $data->setDescription($order->getId(). "-" . $order->getNumber());
 
             /** @var Customer $customer */
             $customer = $order->getCustomer();
