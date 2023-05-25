@@ -16,8 +16,8 @@ km_sylius_payum_lyra_marketplace_refund_notify:
   defaults:
     _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doRefundAction
 
-  km_sylius_payum_lyra_marketplace_token_notify:
-    methods: [POST]
-    path: /marketplace/token/notify
-    defaults:
-      _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doTokenAction
+km_sylius_payum_lyra_marketplace_token_notify:
+  methods: [POST]
+  path: /marketplace/token/notify
+  defaults:
+    _controller: Akki\SyliusPayumLyraMarketplacePlugin\Controller\NotifyController::doTokenAction
