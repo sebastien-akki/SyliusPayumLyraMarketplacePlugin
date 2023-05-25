@@ -11,10 +11,13 @@ use Swagger\Client\Api\MarketplacesApi;
 use Swagger\Client\Api\OrdersApi;
 use Swagger\Client\Api\RefundsApi;
 use Swagger\Client\Api\SellersApi;
+use Swagger\Client\Api\TokensApi;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
 use Swagger\Client\Model\BuyerSerializerLegacy;
+use Swagger\Client\Model\GetTokenDetails;
 use Swagger\Client\Model\ItemSerializer;
+use Swagger\Client\Model\OrderRegister;
 use Swagger\Client\Model\OrderSerializer;
 use Swagger\Client\Model\Refund;
 use Swagger\Client\Model\RefundItem;
@@ -52,6 +55,8 @@ class LyraMarketplaceService
 
     private $marketplaceUUID = null;
 
+    private $tokenApi ;
+
     public function __construct(EntityManagerInterface $entityManager, Configuration $configuration, string $marketplaceUUID)
     {
         $this->entityManagerInterface = $entityManager ;
@@ -62,6 +67,7 @@ class LyraMarketplaceService
         $this->marketplaceApi = new MarketplacesApi(new Client(), $configuration) ;
         $this->itemsApi = new ItemsApi(new Client(), $configuration) ;
         $this->sellersApi = new SellersApi(new Client(), $configuration) ;
+        $this->tokenApi = new TokensApi(new Client(), $configuration) ;
     }
 
     /**
@@ -395,6 +401,22 @@ class LyraMarketplaceService
         $refundItems[] = $refundItem;
 
         return $refundItems;
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function retrieveToken($token): OrderRegister
+    {
+        return $this->tokenApi->tokensRead($token);
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function retrieveAlias($alias): GetTokenDetails
+    {
+        return $this->marketplaceApi->marketplacesAliasRead($alias);
     }
 
     /**

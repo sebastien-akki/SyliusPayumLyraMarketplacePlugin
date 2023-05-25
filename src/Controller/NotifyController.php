@@ -5,11 +5,13 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Controller;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Api\Api;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\NotifyRefund;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\NotifyToken;
 use Exception;
 use Payum\Bundle\PayumBundle\Controller\PayumController;
 use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Request\Notify;
 use Swagger\Client\ApiException;
+use Swagger\Client\Model\OrderRegister;
 use Swagger\Client\Model\OrderSerializer;
 use Swagger\Client\Model\Refund;
 use Sylius\Component\Core\Model\Order;
@@ -152,6 +154,54 @@ class NotifyController extends PayumController
         }
 
         return new Response();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function doTokenAction(Request $request): Response
+    {
+        $body = file_get_contents('php://input');
+        $json = $this->fromJson($body);
+        $token = $json['token'];
+
+        $lyraMarketplacePaymentMethod = $this->paymentMethodRepository->findOneBy(['code' => 'lyra_market_place']);
+
+        if ($lyraMarketplacePaymentMethod === null){
+            return new Response();
+        }
+
+        $api = new Api();
+        $api->setConfig($lyraMarketplacePaymentMethod->getGatewayConfig()->getConfig());
+        $api->setContainer($this->container);
+
+        $order = $this->orderRepository->findOneBy(['lyraOrderUuid' => $token]);
+
+        if (!($order instanceof Order)){
+            return new Response();
+        }
+
+        $tokenInfos = $api->retrieveToken($token);
+
+        if ($tokenInfos instanceof OrderRegister){
+            if (in_array($tokenInfos->getStatus(), [OrderSerializer::STATUS_CREATED, OrderSerializer::STATUS_SUCCEEDED, OrderSerializer::STATUS_FAILED, OrderSerializer::STATUS_CANCELLED, OrderSerializer::STATUS_PENDING, OrderSerializer::STATUS_ABANDONED], true)) {
+                /** @var Payment $payment */
+                $payment = $order->getLastPayment();
+
+                /** @var PaymentMethodInterface $paymentMethod */
+                $paymentMethod = $payment->getMethod();
+
+                /** @var GatewayConfigInterface $gatewayConfig */
+                $gatewayConfig = $paymentMethod->getGatewayConfig();
+
+                // Execute notify & status actions.
+                $gateway = $this->getPayum()->getGateway($gatewayConfig->getGatewayName());
+
+                $gateway->execute(new NotifyToken($payment));
+            }
+        }
+
+
     }
 
     /**
