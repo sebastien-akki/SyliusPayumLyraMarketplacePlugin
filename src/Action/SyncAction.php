@@ -4,6 +4,7 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncRefund;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncToken;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -33,7 +34,10 @@ class SyncAction implements ActionInterface, GatewayAwareInterface
 
         if($model['refund']) {
             $this->gateway->execute(new SyncRefund($model));
-        } else if($model['order']) {
+        }elseif ($model['token']) {
+            $this->gateway->execute(new SyncToken($model));
+        }
+        else if($model['order']) {
             $this->gateway->execute(new SyncOrder($model));
         }
     }

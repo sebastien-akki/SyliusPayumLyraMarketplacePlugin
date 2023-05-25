@@ -5,6 +5,7 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\SyncOrder;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\GetHumanRefundStatus;
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncRefund;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncToken;
 use ArrayAccess;
 use JsonException;
 use Payum\Core\Action\ActionInterface;
@@ -13,6 +14,7 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\GetStatusInterface;
+use Swagger\Client\Model\OrderRegister;
 use Swagger\Client\Model\OrderSerializer;
 use Swagger\Client\Model\Refund;
 use Swagger\Client\ObjectSerializer;
@@ -72,21 +74,23 @@ class StatusAction implements ActionInterface, GatewayAwareInterface
 
         if($model['order']) {
             $this->gateway->execute(new SyncOrder($model));
+            $this->gateway->execute(new SyncToken($model));
             $order = ObjectSerializer::deserialize(json_decode($model['order'], false, 512, JSON_THROW_ON_ERROR), OrderSerializer::class, []);
-            $code = $order->getStatus();
-            switch ($code) {
-                case OrderSerializer::STATUS_PENDING :
-                case OrderSerializer::STATUS_SUCCEEDED : // transaction approuvée ou traitée avec succès
+            $token = ObjectSerializer::deserialize(json_decode($model['token'], false, 512, JSON_THROW_ON_ERROR), OrderRegister::class, []);
+            $orderStatus = $order->getStatus();
+            $tokenStatus = $token->getStatus();
+
+            switch (true) {
+                case $orderStatus === OrderSerializer::STATUS_PENDING || $orderStatus === OrderSerializer::STATUS_SUCCEEDED || $tokenStatus === OrderSerializer::STATUS_PENDING || $tokenStatus === OrderSerializer::STATUS_SUCCEEDED:
                     $request->markCaptured();
                     break;
-                case OrderSerializer::STATUS_CREATED :
-                case OrderSerializer::STATUS_CANCELLED :
+                case $orderStatus === OrderSerializer::STATUS_CREATED || $orderStatus === OrderSerializer::STATUS_CANCELLED :
                     $request->markCanceled();
                     break;
-                case OrderSerializer::STATUS_FAILED :
+                case $orderStatus === OrderSerializer::STATUS_FAILED :
                     $request->markNew();
                     break;
-                case OrderSerializer::STATUS_ABANDONED :
+                case $orderStatus === OrderSerializer::STATUS_ABANDONED :
                     $request->markFailed();
                     break;
                 default :

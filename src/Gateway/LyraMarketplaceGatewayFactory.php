@@ -6,14 +6,17 @@ use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ApiRequestAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ApiResponseAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncOrderAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncRefundAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncTokenAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CancelAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CaptureAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\ConvertPaymentAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\NotifyAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\NotifyRefundAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\NotifyTokenAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\RefundAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\StatusAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\SyncAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\TokenAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Api\Api;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
@@ -78,6 +81,8 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
             'payum.action.api.sync_order'  => new SyncOrderAction(),
             'payum.action.api.sync_refund'  => new SyncRefundAction(),
             'payum.action.sync'            => new SyncAction(),
+            'payum.action.notify_token'    => new NotifyTokenAction(),
+            'payum.action.api.sync_token'  => new SyncTokenAction(),
         ]);
 
         if (!$config['payum.api']) {

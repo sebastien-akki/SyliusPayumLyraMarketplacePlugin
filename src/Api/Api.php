@@ -7,6 +7,8 @@ use Doctrine\Persistence\ObjectManager;
 use Payum\Core\Exception\LogicException;
 use Swagger\Client\ApiException;
 use Swagger\Client\Configuration;
+use Swagger\Client\Model\GetTokenDetails;
+use Swagger\Client\Model\OrderRegister;
 use Swagger\Client\Model\OrderSerializer;
 use Swagger\Client\Model\Refund;
 use Sylius\Component\Core\Model\Order;
@@ -276,6 +278,34 @@ class Api
     private function getUrl(): string
     {
         return self::getUrlFromEndpoint((string)$this->config['ctx_mode']);
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function retrieveToken($token): ?OrderRegister
+    {
+        $entityManager = $this->container->get('sylius.manager.order');
+        if ($token === null){
+            return null;
+        }
+        $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
+        return $marketplaceService->retrieveToken($token);
+
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function retrieveAlias($alias): ?GetTokenDetails
+    {
+        $entityManager = $this->container->get('sylius.manager.order');
+        if ($alias === null){
+            return null;
+        }
+        $marketplaceService = new LyraMarketplaceService($entityManager,$this->createConfigurationMarketplace(),$this->getMarketplaceUUID());
+
+        return $marketplaceService->retrieveAlias($alias);
     }
 
 }
