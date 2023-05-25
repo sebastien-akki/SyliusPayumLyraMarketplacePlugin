@@ -5,7 +5,10 @@ namespace Akki\SyliusPayumLyraMarketplacePlugin\Action\Api;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\SyncToken;
 use ArrayAccess;
+use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Swagger\Client\ApiException;
+
 
 class SyncTokenAction extends AbstractApiAction
 {
