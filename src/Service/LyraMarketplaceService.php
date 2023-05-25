@@ -416,7 +416,7 @@ class LyraMarketplaceService
      */
     public function retrieveAlias($alias): GetTokenDetails
     {
-        return $this->marketplaceApi->marketplacesAliasRead($alias);
+        return $this->marketplaceApi->marketplacesAliasRead($alias, $this->marketplaceUUID);
     }
 
     /**

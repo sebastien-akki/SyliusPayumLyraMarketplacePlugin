@@ -21,7 +21,7 @@ class SyncTokenAction extends AbstractApiAction
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $model->validateNotEmpty(['token','uuid']);
+        $model->validateNotEmpty(['order','uuid']);
 
         $token = $this->api->retrieveToken($model['uuid']);
         if ($token !== null){
