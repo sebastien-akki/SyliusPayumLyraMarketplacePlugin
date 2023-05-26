@@ -200,7 +200,7 @@ class NotifyController extends PayumController
                 $gateway->execute(new NotifyToken($payment));
             }
         }
-
+        return new Response();
 
     }
 
