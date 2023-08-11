@@ -113,6 +113,25 @@ class LyraMarketplaceService
     }
 
     /**
+     * @param Order $order
+     * @return mixed
+     */
+    public function getFormToken(Order $order)
+    {
+
+        $responseCreateOrder = $this->createOrder($order, null);
+        if ($responseCreateOrder) {
+            $uuid = $responseCreateOrder->getUuid();
+            $responseExecuteOrder = $this->getFormTokenEmbedded($uuid);
+            if ($responseExecuteOrder) {
+                return $responseExecuteOrder;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param string $uuid
      *
      * @return OrderSerializer|null
@@ -140,12 +159,13 @@ class LyraMarketplaceService
 
     /**
      * @param Order $order
-     * @param String $returnUrl
+     * @param String|null $returnUrl
+     * @param bool $forceNew
      * @return OrderSerializer|void
      */
-    public function createOrder(Order $order, String $returnUrl)
+    public function createOrder(Order $order, ?String $returnUrl, bool $forceNew = false)
     {
-        $this->processOrder($order, $returnUrl);
+        $this->processOrder($order, $returnUrl, false, $forceNew);
         try {
             $response = $this->ordersApi->ordersCreate($this->orderSerializer, $this->expand);
             $order->setLyraOrderUuid($response->getUuid());
@@ -183,6 +203,20 @@ class LyraMarketplaceService
             return $this->ordersApi->ordersExecuteExecuteToken($uuid) ;
         }catch (Exception $e){
             echo 'Exception when calling OrdersApi->ordersExecuteExecuteToken: ', $e->getMessage(), PHP_EOL;
+
+        }
+    }
+
+    /**
+     * @param $uuid
+     * @return object|void
+     */
+    public function getFormTokenEmbedded($uuid)
+    {
+        try {
+            return $this->ordersApi->ordersExecuteEmbeddedExecuteEmbedded($uuid) ;
+        }catch (Exception $e){
+            echo 'Exception when calling OrdersApi->ordersExecuteEmbeddedExecuteEmbedded: ', $e->getMessage(), PHP_EOL;
 
         }
     }
@@ -241,14 +275,18 @@ class LyraMarketplaceService
 
     /**
      * @param Order $order
-     * @param String $returnUrl
+     * @param String|null $returnUrl
      * @param bool $update
+     * @param bool $forceNew
      * @return void
      */
-    private function processOrder(Order $order, String $returnUrl, bool $update =  false): void
+    private function processOrder(Order $order, ?String $returnUrl, bool $update =  false, bool $forceNew = false): void
     {
         $this->hydrateItemsFromOrder($order, $update);
-        $lyraOrder = $this->getOrder($order->getLyraOrderUuid()) ;
+        $lyraOrder = null;
+        if (!$forceNew) {
+            $lyraOrder = $this->getOrder($order->getLyraOrderUuid()) ;
+        }
         if ($lyraOrder instanceof OrderSerializer){
             $data = $lyraOrder ;
         }else{
