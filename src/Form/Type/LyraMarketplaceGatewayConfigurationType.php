@@ -54,6 +54,10 @@ final class LyraMarketplaceGatewayConfigurationType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('marketplace_public_key', TextType::class, [
+                'label' => 'akki.lyra_marketplace.fields.marketplace_public_key.label',
+                'help' => 'akki.lyra_marketplace.fields.marketplace_public_key.help',
+            ])
         ;
     }
 }

@@ -8,6 +8,9 @@ akki:
       marketplace_uuid:
         label: UUID Marketplace
         help: UUID Marketplace
+      marketplace_public_key:
+        label: Clé publique
+        help: a renseigner pour les embedded fields
       password:
         label: Mot de passe
       ctx_mode:

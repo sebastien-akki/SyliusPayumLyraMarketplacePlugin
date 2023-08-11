@@ -91,6 +91,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
                 'password' => null,
                 'ctx_mode'    => null,
                 'marketplace_uuid'    => null,
+                'marketplace_public_key'    => null,
             ];
 
             $config->defaults($config['payum.default_options']);
@@ -107,6 +108,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
                     'password' => $config['password'],
                     'ctx_mode'    => $config['ctx_mode'],
                     'marketplace_uuid'    => $config['marketplace_uuid'],
+                    'marketplace_public_key'    => $config['marketplace_public_key'],
                 ];
 
                 $api = new Api();
