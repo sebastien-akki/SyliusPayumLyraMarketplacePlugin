@@ -539,11 +539,14 @@ class LyraMarketplaceService
      */
     private function getLyraItem(OrderItem $item)
     {
-        try {
-            return  $this->itemsApi->itemsRead($item->getLyraItemUuid());
-        } catch (Exception $e) {
-            echo 'Exception when calling itemsApi->itemsRead : ', $e->getMessage(), PHP_EOL;
+        if (!empty($item->getLyraItemUuid())){
+            try {
+                return  $this->itemsApi->itemsRead($item->getLyraItemUuid());
+            } catch (Exception $e) {
+                echo 'Exception when calling itemsApi->itemsRead : ', $e->getMessage(), PHP_EOL;
+            }
         }
+
     }
 
     /**
