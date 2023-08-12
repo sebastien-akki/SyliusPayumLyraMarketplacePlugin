@@ -297,7 +297,7 @@ class LyraMarketplaceService
         }
         $data->setItems($this->items) ;
         if (!$update){
-            $microtime = (string)microtime();
+            $microtime = str_replace(' ','-',((string)microtime()));
 
             $data->setMarketplace($this->marketplaceUUID) ;
             $data->setReference($order->getId(). "-" . $microtime);
