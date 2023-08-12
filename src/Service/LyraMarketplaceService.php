@@ -118,7 +118,7 @@ class LyraMarketplaceService
      */
     public function getFormToken(Order $order)
     {
-
+        $this->ordersApi->ordersDelete($order->getLyraOrderUuid());
         $responseCreateOrder = $this->createOrder($order, null);
         if ($responseCreateOrder) {
             $uuid = $responseCreateOrder->getUuid();
