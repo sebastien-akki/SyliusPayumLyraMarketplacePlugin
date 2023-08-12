@@ -297,10 +297,11 @@ class LyraMarketplaceService
         }
         $data->setItems($this->items) ;
         if (!$update){
+            $microtime = (string)microtime();
 
             $data->setMarketplace($this->marketplaceUUID) ;
-            $data->setReference($order->getId());
-            $data->setDescription($order->getId(). "-" . $order->getNumber());
+            $data->setReference($order->getId(). "-" . $microtime);
+            $data->setDescription($order->getId(). "-" . $order->getNumber(). "-" . $microtime);
 
             /** @var Customer $customer */
             $customer = $order->getCustomer();
