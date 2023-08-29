@@ -462,15 +462,14 @@ class LyraMarketplaceService
 
     /**
      * @param OrderItem $orderItem
-     * @return float|int
+     * @return int
      */
-    private function calculateCommissionForOrderItem(OrderItem $orderItem)
+    private function calculateCommissionForOrderItem(OrderItem $orderItem): int
     {
         $commissionRate = $this->getCommissionRateForOrderItem($orderItem);
 
         // Adding type to avoid unexpected float value
         return (int) round(($orderItem->getTotal() * $commissionRate) / 100, 2);
-
     }
 
     /**
