@@ -11,3 +11,10 @@ services:
     class: Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\RefundOrderProcessor
     arguments:
       $refundRequestFactory: '@akki.sylius_payum_lyra_marketplace.factory.refund_request'
+
+  akki.sylius_payum_lyra_marketplace.state_machine.validate_payment:
+    public: true
+    parent: Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\AbstractOrderProcessor
+    class: Akki\SyliusPayumLyraMarketplacePlugin\StateMachine\ValidatePaymentOrderProcessor
+    arguments:
+      $smFactory: '@sm.factory'

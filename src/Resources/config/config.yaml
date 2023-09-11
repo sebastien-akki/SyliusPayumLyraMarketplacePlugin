@@ -3,6 +3,11 @@ winzou_state_machine:
     callbacks:
       before:
         akki.sylius_payum_lyra_marketplace_refund:
-          on: ["refund"]
-          do: ["@akki.sylius_payum_lyra_marketplace.state_machine.refund", "__invoke"]
-          args: ["object"]
+          on: [ "refund" ]
+          do: [ "@akki.sylius_payum_lyra_marketplace.state_machine.refund", "__invoke" ]
+          args: [ "object" ]
+      after:
+        akki.sylius_payum_lyra_marketplace_validate_payment:
+          on: [ "create" ]
+          do: [ "@akki.sylius_payum_lyra_marketplace.state_machine.validate_payment", "__invoke" ]
+          args: [ "object" ]

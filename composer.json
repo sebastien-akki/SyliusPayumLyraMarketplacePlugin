@@ -9,7 +9,7 @@
     "psr/log": "~1.0",
     "sylius/sylius": "~1.7|~1.5",
     "symfony/process": "~2.7|~3.0|~4.0",
-    "akki/syliuslyramarketplaceapiclient": "dev-develop",
+    "akki/syliuslyramarketplaceapiclient": "dev-feature/RM-1261",
     "ext-json": "*"
   },
   "license": "MIT",
@@ -21,8 +21,8 @@
   ],
   "repositories": {
     "akkiLyraMarketplace": {
-      "type": "git",
-      "url": "https://github.com/sebastien-akki/SyliusLyraMarketplaceApiClient.git"
+      "type": "path",
+      "url": "/user/Projects/Sylius/plugins/SyliusLyraMarketplaceApiClient"
     }
   },
   "prefer-stable": false,

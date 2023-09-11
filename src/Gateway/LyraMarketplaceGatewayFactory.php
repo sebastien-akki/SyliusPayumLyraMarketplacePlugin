@@ -7,6 +7,7 @@ use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ApiResponseAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncOrderAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncRefundAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\SyncTokenAction;
+use Akki\SyliusPayumLyraMarketplacePlugin\Action\Api\ValidatePaymentAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CancelAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\CaptureAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\ConvertPaymentAction;
@@ -18,6 +19,7 @@ use Akki\SyliusPayumLyraMarketplacePlugin\Action\StatusAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\SyncAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Action\TokenAction;
 use Akki\SyliusPayumLyraMarketplacePlugin\Api\Api;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\ValidatePayment;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use Payum\Core\GatewayFactoryInterface;
@@ -83,6 +85,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
             'payum.action.sync'            => new SyncAction(),
             'payum.action.notify_token'    => new NotifyTokenAction(),
             'payum.action.api.sync_token'  => new SyncTokenAction(),
+            'payum.action.api.validate_payment' => new ValidatePaymentAction()
         ]);
 
         if (!$config['payum.api']) {
@@ -96,7 +99,7 @@ class LyraMarketplaceGatewayFactory extends GatewayFactory
 
             $config->defaults($config['payum.default_options']);
 
-            $config['payum.required_options'] = ['username', 'password', 'ctx_mode', 'marketplace_uuid',];
+            $config['payum.required_options'] = ['username', 'password', 'ctx_mode', 'marketplace_uuid', 'marketplace_public_key'];
 
             $container = $this->container;
 
