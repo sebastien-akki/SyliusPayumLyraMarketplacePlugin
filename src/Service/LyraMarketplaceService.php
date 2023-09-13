@@ -216,9 +216,8 @@ class LyraMarketplaceService
         }
 
         try {
-            $this->ordersApi->cancelTransaction("$payment->getDetails()['uuid']");
+            $this->ordersApi->cancelTransaction($payment->getDetails()['uuid']);
         } catch (ApiException $e) {
-            echo 'Exception when calling OrdersApi->ordersUpdate: ', $e->getMessage(), PHP_EOL;
         }
     }
 
