@@ -21,8 +21,8 @@
   ],
   "repositories": {
     "akkiLyraMarketplace": {
-      "type": "path",
-      "url": "/user/Projects/Sylius/plugins/SyliusLyraMarketplaceApiClient"
+      "type": "git",
+      "url": "https://github.com/sebastien-akki/SyliusLyraMarketplaceApiClient.git"
     }
   },
   "prefer-stable": false,
