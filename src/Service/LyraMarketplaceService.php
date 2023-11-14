@@ -216,7 +216,7 @@ class LyraMarketplaceService
         }
 
         try {
-            $this->ordersApi->cancelTransaction($payment->getDetails()['uuid']);
+            $this->ordersApi->ordersDelete($payment->getDetails()['uuid']);
         } catch (ApiException $e) {
         }
     }
