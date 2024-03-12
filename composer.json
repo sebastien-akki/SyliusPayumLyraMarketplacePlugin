@@ -4,11 +4,11 @@
   "type": "sylius-plugin",
   "require": {
     "payum/core": "~1.5",
-    "php": "~7.3",
+    "php": "~7.3|^8.1",
     "php-http/guzzle6-adapter": "^1.1|~2.0",
-    "psr/log": "~1.0",
-    "sylius/sylius": "~1.7|~1.5",
-    "symfony/process": "~2.7|~3.0|~4.0",
+    "psr/log": "~1.0|~2.0",
+    "sylius/sylius": "~1.7|~1.5|^1.12",
+    "symfony/process": "~2.7|~3.0|~4.0|~6.0",
     "akki/syliuslyramarketplaceapiclient": "dev-develop",
     "ext-json": "*"
   },
