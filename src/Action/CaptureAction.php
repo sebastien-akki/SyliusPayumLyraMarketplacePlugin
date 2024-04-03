@@ -3,7 +3,6 @@
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
 use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\ValidatePayment;
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\Request;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -11,7 +10,6 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
-use Payum\Core\Request\Sync;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 
