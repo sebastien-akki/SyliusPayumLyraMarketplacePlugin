@@ -30,7 +30,6 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Customer\Model\CustomerInterface;
-use function getenv;
 
 class LyraMarketplaceService
 {
@@ -387,7 +386,7 @@ class LyraMarketplaceService
      */
     private function processOrderRefund(Order $order): Refund
     {
-        $defaultSellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
+        $defaultSellerUuid = $this->marketplaceUUID;
         $referenceRemboursement = "remb" . $order->getId();
         $refundItems = $this->hydrateRefundItemsFromOrder($order, $referenceRemboursement, $defaultSellerUuid);
 
@@ -418,7 +417,7 @@ class LyraMarketplaceService
                     $vendor = $item->getProduct()->getVendor();
                     $sellerUuid = $vendor->getSellerUuid();
                 } else {
-                    $sellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
+                    $sellerUuid = $this->marketplaceUUID;
                 }
 
                 $itemSerializer->setSeller($sellerUuid);
