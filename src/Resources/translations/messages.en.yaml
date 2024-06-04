@@ -8,6 +8,9 @@ akki:
       marketplace_uuid:
         label: traduction_missing
         help: traduction_missing
+      lyra_marketplace_seller_uuid:
+        label: traduction_missing
+        help: traduction_missing
       marketplace_public_key:
         label: traduction_missing
         help: traduction_missing

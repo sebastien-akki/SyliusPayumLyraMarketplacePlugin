@@ -30,7 +30,6 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Customer\Model\CustomerInterface;
-use function getenv;
 
 class LyraMarketplaceService
 {
@@ -55,12 +54,15 @@ class LyraMarketplaceService
 
     private $marketplaceUUID = null;
 
+    private $lyraMarketplaceSellerUuid = null;
+
     private $tokenApi;
 
-    public function __construct(EntityManagerInterface $entityManager, Configuration $configuration, string $marketplaceUUID)
+    public function __construct(EntityManagerInterface $entityManager, Configuration $configuration, string $marketplaceUUID, string $lyraMarketplaceSellerUuid)
     {
         $this->entityManagerInterface = $entityManager;
         $this->marketplaceUUID = $marketplaceUUID;
+        $this->lyraMarketplaceSellerUuid = $lyraMarketplaceSellerUuid;
         $this->orderSerializer = new OrderSerializer();
         $this->ordersApi = new OrdersApi(new Client(), $configuration);
         $this->refundsApi = new RefundsApi(new Client(), $configuration);
@@ -387,7 +389,7 @@ class LyraMarketplaceService
      */
     private function processOrderRefund(Order $order): Refund
     {
-        $defaultSellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
+        $defaultSellerUuid = $this->lyraMarketplaceSellerUuid;
         $referenceRemboursement = "remb" . $order->getId();
         $refundItems = $this->hydrateRefundItemsFromOrder($order, $referenceRemboursement, $defaultSellerUuid);
 
@@ -418,7 +420,7 @@ class LyraMarketplaceService
                     $vendor = $item->getProduct()->getVendor();
                     $sellerUuid = $vendor->getSellerUuid();
                 } else {
-                    $sellerUuid = getenv("REWORLD_LYRA_MARKETPLACE_SELLER_UUID");
+                    $sellerUuid = $this->lyraMarketplaceSellerUuid;
                 }
 
                 $itemSerializer->setSeller($sellerUuid);

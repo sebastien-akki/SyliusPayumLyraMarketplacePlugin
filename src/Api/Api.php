@@ -74,7 +74,7 @@ class Api
         }
 
         if ($order instanceof Order) {
-            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
             $marketplaceService->generate($order, $returnUrl);
 
             return array(
@@ -104,7 +104,7 @@ class Api
         $entityManager = $this->container->get('sylius.manager.order');
 
         if ($uuid !== null) {
-            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
             return $marketplaceService->readOrder($uuid);
         }
 
@@ -128,7 +128,7 @@ class Api
 
         if ($order instanceof Order && !empty($order->getLyraOrderUuid())) {
 
-            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
             return $marketplaceService->refundOrder($order);
         }
 
@@ -148,7 +148,7 @@ class Api
         $entityManager = $this->container->get('sylius.manager.order');
 
         if ($uuid !== null) {
-            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+            $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
             return $marketplaceService->readRefund($uuid);
         }
 
@@ -160,7 +160,7 @@ class Api
         /** @var ObjectManager $entityManager */
         $entityManager = $this->container->get('sylius.manager.order');
 
-        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
         $marketplaceService->validatePayment($uuid);
     }
 
@@ -233,6 +233,17 @@ class Api
      *
      * @return string
      */
+    public function getLyraMarketplaceSellerUUID(): string
+    {
+        $this->ensureApiIsConfigured();
+        return (string)$this->config['lyra_marketplace_seller_uuid'];
+    }
+
+    /**
+     * retrieve marketplace username.
+     *
+     * @return string
+     */
     public function getMarketplacePassword(): string
     {
         $this->ensureApiIsConfigured();
@@ -269,11 +280,13 @@ class Api
                 'password',
                 'ctx_mode',
                 'marketplace_uuid',
+                'lyra_marketplace_seller_uuid',
                 'marketplace_public_key'
             ])
             ->setAllowedTypes('username', 'string')
             ->setAllowedTypes('password', 'string')
             ->setAllowedTypes('marketplace_uuid', 'string')
+            ->setAllowedTypes('lyra_marketplace_seller_uuid', 'string')
             ->setAllowedTypes('marketplace_public_key', 'string')
             ->setAllowedValues('ctx_mode', $this->getModes());
 
@@ -299,7 +312,7 @@ class Api
         if ($token === null) {
             return null;
         }
-        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
         return $marketplaceService->retrieveToken($token);
 
     }
@@ -313,7 +326,7 @@ class Api
         if ($alias === null) {
             return null;
         }
-        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID());
+        $marketplaceService = new LyraMarketplaceService($entityManager, $this->createConfigurationMarketplace(), $this->getMarketplaceUUID(), $this->getLyraMarketplaceSellerUUID());
 
         return $marketplaceService->retrieveAlias($alias);
     }
