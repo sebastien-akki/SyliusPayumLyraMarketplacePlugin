@@ -30,6 +30,7 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Customer\Model\CustomerInterface;
+use Sylius\Component\Payment\Model\PaymentInterface as PaymentInterfaceAlias;
 
 class LyraMarketplaceService
 {
@@ -128,10 +129,12 @@ class LyraMarketplaceService
         }
 
         //Si on arrive pas à annuler le paiement, on ne fait rien. On peut quand même récupérer le token.
-        try {
-            $this->cancelPayment($payment);
-        } catch (ApiException $exception) {
+        if ($payment->getState() !== PaymentInterfaceAlias::STATE_COMPLETED) {
+            try {
+                $this->cancelPayment($payment);
+            } catch (ApiException $exception) {
 
+            }
         }
 
         $responseCreateOrder = $this->createOrder($order, null, true);
