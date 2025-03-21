@@ -2,7 +2,7 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Action;
 
-use Akki\SyliusPayumLyraMarketplacePlugin\Request\Request;
+use Akki\SyliusPayumLyraMarketplacePlugin\Request\Api\ValidatePayment;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -10,7 +10,6 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
-use Payum\Core\Request\Sync;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
 
@@ -31,23 +30,9 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
-
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if ($request->getToken()) {
-            $model['url_success'] = $request->getToken()->getAfterUrl();
-
-            // Notify url
-            if (empty($model['url_check']) && $this->tokenFactory) {
-                $notifyToken = $this->tokenFactory->createNotifyToken(
-                    $request->getToken()->getGatewayName(),
-                    $request->getToken()->getDetails()
-                );
-                $model['url_check'] = $notifyToken->getTargetUrl();
-            }
-        }
-
-        $this->gateway->execute(new Request($model));
+        $this->gateway->execute(new ValidatePayment($model));
     }
 
     /**

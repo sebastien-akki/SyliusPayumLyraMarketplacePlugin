@@ -54,6 +54,20 @@ final class LyraMarketplaceGatewayConfigurationType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('lyra_marketplace_seller_uuid', TextType::class, [
+                'label' => 'akki.lyra_marketplace.fields.lyra_marketplace_seller_uuid.label',
+                'help' => 'akki.lyra_marketplace.fields.lyra_marketplace_seller_uuid.help',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'akki.lyra_marketplace.lyra_marketplace_seller_uuid.not_blank',
+                        'groups' => ['sylius']
+                    ]),
+                ],
+            ])
+            ->add('marketplace_public_key', TextType::class, [
+                'label' => 'akki.lyra_marketplace.fields.marketplace_public_key.label',
+                'help' => 'akki.lyra_marketplace.fields.marketplace_public_key.help',
+            ])
         ;
     }
 }

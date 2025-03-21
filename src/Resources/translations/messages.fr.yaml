@@ -8,6 +8,12 @@ akki:
       marketplace_uuid:
         label: UUID Marketplace
         help: UUID Marketplace
+      lyra_marketplace_seller_uuid:
+        label: Lyra Seller UUID Marketplace
+        help: Lyra Seller UUID Marketplace
+      marketplace_public_key:
+        label: Clé publique
+        help: a renseigner pour les embedded fields
       password:
         label: Mot de passe
       ctx_mode:
