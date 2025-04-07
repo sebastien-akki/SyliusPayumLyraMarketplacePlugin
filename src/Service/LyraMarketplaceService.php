@@ -2,6 +2,7 @@
 
 namespace Akki\SyliusPayumLyraMarketplacePlugin\Service;
 
+use Akki\SyliusPayumLyraMarketplacePlugin\Entity\Refund\LineItemInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use GuzzleHttp\Client;
@@ -31,6 +32,7 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Customer\Model\CustomerInterface;
 use Sylius\Component\Payment\Model\PaymentInterface as PaymentInterfaceAlias;
+use Sylius\RefundPlugin\Entity\CreditMemo;
 
 class LyraMarketplaceService
 {
@@ -269,6 +271,13 @@ class LyraMarketplaceService
         }
     }
 
+    public function refundCreditMemo(CreditMemo $creditMemo): Refund
+    {
+        $refund = $this->processCreditMemoRefund($creditMemo);
+
+        return $this->refundsApi->refundsCreate($refund);
+    }
+
     public function validatePayment(string $uuid): void
     {
         try {
@@ -406,6 +415,23 @@ class LyraMarketplaceService
         return $refund;
     }
 
+    private function processCreditMemoRefund(CreditMemo $creditMemo): Refund
+    {
+        $defaultSellerUuid = $this->lyraMarketplaceSellerUuid;
+        $order = $creditMemo->getOrder();
+        $referenceRemboursement = $order->getId() . "-" . $creditMemo->getNumber();
+        $refundItems = $this->hydrateRefundItemsFromCreditMemo($creditMemo, $referenceRemboursement, $defaultSellerUuid);
+
+        $refund = new Refund();
+        $refund->setOrder($order->getLyraOrderUuid());
+        $refund->setReference($referenceRemboursement);
+        $refund->setDescription("Remboursement commande  #" . $order->getNumber() . " pour l'avoir #" . $creditMemo->getNumber());
+        $refund->setCurrency($order->getCurrencyCode());
+        $refund->setItems($refundItems);
+
+        return $refund;
+    }
+
     /**
      * @param Order $order
      * @param bool $update
@@ -489,6 +515,45 @@ class LyraMarketplaceService
         return $refundItems;
     }
 
+    private function hydrateRefundItemsFromCreditMemo(CreditMemo $creditMemo, $referenceRemboursement, $defaultSellerUuid): array
+    {
+        $refundItems = [];
+        $totalCommissionAmount = 0;
+
+        /** @var LineItemInterface $creditMemoItem */
+        foreach ($creditMemo->getLineItems() as $creditMemoItem) {
+            $refundItem = new RefundItem();
+
+            $product = $creditMemoItem->getProduct();
+            $sellerUuid = $product?->getVendor()?->getSellerUuid() ?? $defaultSellerUuid;
+
+            $itemTotal = $creditMemoItem->netValue();
+            $commissionRate = $product === null ? 100 : $this->getCommissionRateForProduct($product);
+            $itemCommissionAmount = $this->calculateCommissionForAmount($itemTotal, $commissionRate);
+            $totalCommissionAmount += $itemCommissionAmount;
+            $itemTotalWithoutCommission = $itemTotal - $itemCommissionAmount;
+
+            if ($itemTotalWithoutCommission === 0) {
+                continue;
+            }
+            $refundItem->setSeller($sellerUuid);
+            $refundItem->setReference($referenceRemboursement . '_' . $creditMemoItem->getId());
+            $refundItem->setDescription($creditMemoItem->name());
+            $refundItem->setAmount($itemTotalWithoutCommission);
+            $refundItems[] = $refundItem;
+        }
+
+        //on ajoute la partie prise en charge par le gestionnaire
+        $refundItem = new RefundItem();
+        $refundItem->setSeller($defaultSellerUuid);
+        $refundItem->setReference($referenceRemboursement . '_gest');
+        $refundItem->setDescription("Gestionnaire");
+        $refundItem->setAmount($totalCommissionAmount);
+        $refundItems[] = $refundItem;
+
+        return $refundItems;
+    }
+
     /**
      * @throws ApiException
      */
@@ -530,8 +595,15 @@ class LyraMarketplaceService
      */
     private function getCommissionRateForOrderItem(OrderItem $orderItem)
     {
-        /** @var Product $product */
-        $product = $orderItem->getProduct();
+        return $this->getCommissionRateForProduct($orderItem->getProduct());
+    }
+
+    /**
+     * @param Product $product
+     * @return mixed
+     */
+    private function getCommissionRateForProduct(Product $product)
+    {
         $taxon = $product->getMainTaxon();
         $commissionRate = $product->getTauxCommissionRm();
 
@@ -554,8 +626,17 @@ class LyraMarketplaceService
     {
         $commissionRate = $this->getCommissionRateForOrderItem($orderItem);
 
+        return $this->calculateCommissionForAmount($orderItem->getTotal(), $commissionRate);
+    }
+
+    /**
+     * @param OrderItem $orderItem
+     * @return int
+     */
+    private function calculateCommissionForAmount($amount, $commissionRate): int
+    {
         // Adding type to avoid unexpected float value
-        return (int) round(($orderItem->getTotal() * $commissionRate) / 100, 2);
+        return (int) round(($amount * $commissionRate) / 100, 2);
     }
 
     /**

@@ -10,6 +10,7 @@ use Exception;
 use Payum\Bundle\PayumBundle\Controller\PayumController;
 use Payum\Core\Model\GatewayConfigInterface;
 use Payum\Core\Request\Notify;
+use SM\Factory\FactoryInterface as StateMachineFactoryInterface;
 use Swagger\Client\ApiException;
 use Swagger\Client\Model\OrderRegister;
 use Swagger\Client\Model\OrderSerializer;
@@ -19,6 +20,7 @@ use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Payment\Model\Payment;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\RefundPlugin\StateResolver\RefundPaymentCompletedStateApplierInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,19 +37,37 @@ class NotifyController extends PayumController
     /** @var OrderRepositoryInterface $orderRepository */
     private $orderRepository;
 
+    /** @var RepositoryInterface $refundPaymentRepository */
+    private $refundPaymentRepository;
+
+    /** @var RefundPaymentCompletedStateApplierInterface $refundPaymentCompletedStateApplier */
+    private $refundPaymentCompletedStateApplier;
+
+    /** @var StateMachineFactoryInterface $stateMachineFactory */
+    private $stateMachineFactory;
+
     /**
-     * @param ContainerInterface $container
-     * @param RepositoryInterface $paymentMethodRepository
-     * @param OrderRepositoryInterface $orderRepository
+     * @param ContainerInterface                          $container
+     * @param RepositoryInterface                         $paymentMethodRepository
+     * @param OrderRepositoryInterface                    $orderRepository
+     * @param RepositoryInterface                         $refundPaymentRepository
+     * @param RefundPaymentCompletedStateApplierInterface $refundPaymentCompletedStateApplier
+     * @param StateMachineFactoryInterface                $stateMachineFactory
      */
     public function __construct(
         ContainerInterface $container,
         RepositoryInterface $paymentMethodRepository,
-        OrderRepositoryInterface $orderRepository
+        OrderRepositoryInterface $orderRepository,
+        RepositoryInterface $refundPaymentRepository,
+        RefundPaymentCompletedStateApplierInterface $refundPaymentCompletedStateApplier,
+        StateMachineFactoryInterface $stateMachineFactory
     ) {
         $this->container = $container;
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->orderRepository = $orderRepository;
+        $this->refundPaymentRepository = $refundPaymentRepository;
+        $this->refundPaymentCompletedStateApplier = $refundPaymentCompletedStateApplier;
+        $this->stateMachineFactory = $stateMachineFactory;
     }
 
     /**
@@ -127,6 +147,20 @@ class NotifyController extends PayumController
         $refund = $api->retrieveRefund($json['refund']);
 
         if (!($refund instanceof Refund)){
+            return new Response();
+        }
+
+        $refundPayment = $this->refundPaymentRepository->findOneBy(['lyraRefundUuid' => $json['refund']]);
+        if ($refundPayment !== null) {
+            try {
+                if ($refund->getStatus() === Refund::STATUS_SUCCEEDED &&
+                    $this->stateMachineFactory->get($refundPayment, 'sylius_refund_refund_payment')->can('complete')
+                ) {
+                    $this->refundPaymentCompletedStateApplier->apply($refundPayment);
+                }
+            } catch (\Exception $e) {
+            }
+
             return new Response();
         }
 

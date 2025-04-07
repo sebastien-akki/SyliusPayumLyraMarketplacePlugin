@@ -24,6 +24,9 @@ services:
             - '@service_container'
             - '@sylius.repository.payment_method'
             - '@sylius.repository.order'
+            - '@sylius_refund.repository.refund_payment'
+            - '@Sylius\RefundPlugin\StateResolver\RefundPaymentCompletedStateApplierInterface'
+            - '@sm.factory'
 
     akki.lyra_marketplace.extension.update_payment_state:
         public: true
@@ -34,3 +37,33 @@ services:
             - name: payum.extension
               factory: lyra_marketplace
               alias: flux_se.sylius_payum_stripe.extension.update_payment_state
+              
+    akki.lyra_marketplace.handler.refund_payment_handler:
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Handler\RefundPaymentHandler
+        arguments:
+            - '@sylius_refund.repository.credit_memo'
+            - '@sylius.repository.order'
+            - '@sylius.repository.payment_method'
+            - '@sylius_refund.repository.refund_payment'
+            - '@doctrine.orm.entity_manager'
+        tags: 
+            - { name: messenger.message_handler, bus: sylius.event_bus }
+
+    Sylius\RefundPlugin\Converter\LineItem\OrderItemUnitLineItemsConverter:
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Converter\LineItem\OrderItemUnitLineItemsConverter
+        arguments:
+            - '@sylius.repository.order_item_unit'
+            - '@Sylius\RefundPlugin\Provider\TaxRateProviderInterface'
+            - '@sylius.resource_registry'
+        tags:
+            - { name: sylius_refund.line_item_converter }
+                
+    Sylius\RefundPlugin\Converter\LineItem\ShipmentLineItemsConverter:
+        class: Akki\SyliusPayumLyraMarketplacePlugin\Converter\LineItem\ShipmentLineItemsConverter
+        arguments:
+            - '@sylius.repository.adjustment'
+            - '@Sylius\RefundPlugin\Provider\TaxRateProviderInterface'
+            - '@sylius.resource_registry'
+        tags:
+            - { name: sylius_refund.line_item_converter }
+    
